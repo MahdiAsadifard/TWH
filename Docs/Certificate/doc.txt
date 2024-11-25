@@ -1,0 +1,62 @@
+pass: TWH$INS@
+
+
+POWERSHELL: 
+1- openssl genrsa -out TWH.key -aes256
+2- openssl req -x509 -new -extensions v3_ca -key TWH.key -days 1000 -out TWH.crt
+3- openssl req -new -nodes -newkey rsa:2048 -keyout user.key -out user.csr
+4- openssl x509 -CA TWH.crt -CAkey TWH.key -CAcreateserial -req -days=1000 -in user.csr -out user.crt
+5- cmd /c copy user.key + user.crt user.pem
+6- Verify certificate: 
+	openssl verify -verbose -CAfile TWH.crt user.pem
+7- Verify .pem file:
+	openssl x509 -in user.pem -inform PEM -subject -nameopt RFC2253
+8- Add adin user to mongo
+	script below
+9- Now create .pfx 
+	certutil -mergepfx user.crt TWH.pfx
+10- Copy TWH.pfx to drive c:\\
+
+=================================
+ROOT certificate:
+
+Country Name (2 letter code) [AU]:CA
+State or Province Name (full name) [Some-State]:ONTARIO
+Locality Name (eg, city) []:TORONTO
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:TWH
+Organizational Unit Name (eg, section) []:TWH
+Common Name (e.g. server FQDN or YOUR name) []:TWH
+Email Address []:twh@twh.com
+
+=================================
+
+USER certificate:
+
+Country Name (2 letter code) [AU]:CA
+State or Province Name (full name) [Some-State]:ONTARIO
+Locality Name (eg, city) []:TORONTO
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:TWH
+Organizational Unit Name (eg, section) []:TWH
+Common Name (e.g. server FQDN or YOUR name) []:127.0.0.1
+Email Address []:twhuser@twh.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:TWH$INS@
+An optional company name []:TWH
+=================================
+
+Add user to mongodb
+
+db.getSiblingDB("$external").runCommand(
+  {
+    createUser: "emailAddress=twhuser@twh.com,CN=127.0.0.1,OU=TWH,O=TWH,L=TORONTO,ST=ONTARIO,C=CA",
+    roles: [
+             { role: 'readWrite', db: 'TWHDB' },
+             { role: 'userAdminAnyDatabase', db: 'admin' }
+           ],
+    writeConcern: { w: "majority" , wtimeout: 5000 }
+  }
+)
+
+
