@@ -41,7 +41,6 @@ namespace TWHapi
         }
 
         // Add services to the container.
-        //public void ConfigureServices(IServiceCollection services)
         public void ConfigureServices()
         {
             _builder.Services.AddControllers();
@@ -79,30 +78,27 @@ namespace TWHapi
             _builder.Logging.ClearProviders();
             _builder.Logging.AddConsole();
 
-            //services.AddHttpsRedirection(options => options.HttpsPort = 5001);
             _builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
         }
-        //private void InitializeServices(IServiceCollection services)
         private void InitializeServices()
         {
             _builder.Services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
             _builder.Services.AddScoped<Services.Interfaces.IUserOperations, Services.Collections.UserOperations>();
         }
-
-        private void CreateHostBuilder(/*IWebHostBuilder webHost*/)
+        private void CreateHostBuilder()
         {
-            var envs = Environment.GetEnvironmentVariables();
-            foreach (var item in envs)
-            {
-                Console.WriteLine("==== env:  " + item);
-            }
-            var x = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            Console.WriteLine("==========================x ASPNETCORE_ENVIRONMENT : " + x);
-            // TODO : change url based on dev / prod
-            _builder.WebHost.UseUrls("http://*:5001");
+            bool isDev = _builder.Environment.IsDevelopment();
+            bool isProd = _builder.Environment.IsProduction();
+            var port = _builder.Environment.IsDevelopment() ? 
+                _builder.Configuration.GetSection("ServerInfo:DevelopmentPort").Get<string>()
+                : _builder.Configuration.GetSection("ServerInfo:ProductionPort").Get<string>();
+
+            Console.WriteLine($"Dev: {isDev},  Prod: {isProd}, PORT: {port}");
+
+            _builder.WebHost.UseUrls($"http://*:{port}");
         }
     }
 }
