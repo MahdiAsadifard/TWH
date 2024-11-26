@@ -1,7 +1,18 @@
+using TWHapi.ProgramHelpers.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+builder
+    .Services
+    .InitializeCORS(builder.Configuration)
+    .InitializeServices(builder.Configuration)
+    .InitializeOptions();
 
-var startUp = new TWHapi.Startup(builder);
-startUp.ConfigureServices();
+builder.Logging.InitializeLogging();
 
-var app = builder.Build();
-startUp.Configure(app);
+builder
+    .Build()
+    .CreateHostBuilder(builder.Environment, builder.Configuration)
+    .Configure()
+    .Run();
+
+

@@ -1,4 +1,4 @@
-﻿namespace TWHapi.Middlewares
+﻿namespace TWHapi.ProgramHelpers.Middlewares
 {
     using Microsoft.AspNetCore.Http;
     using Core.Exceptions;
@@ -12,7 +12,7 @@
         private readonly RequestDelegate _nextDelegate;
         public ExceptionHandlingMiddleware(RequestDelegate nextDelegate)
         {
-            this._nextDelegate = nextDelegate;
+            _nextDelegate = nextDelegate;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -46,8 +46,8 @@
                 return context.Response.WriteAsJsonAsync(
                     new
                     {
-                        Message = apiException.Message,
-                        StatusCode = apiException.StatusCode,
+                        apiException.Message,
+                        apiException.StatusCode,
                         //Detail = apiException.StackTrace
                     }
                     );
@@ -76,7 +76,7 @@
             context.Response.StatusCode = (int)statusCode;
 
             return context.Response.WriteAsJsonAsync(
-                new 
+                new
                 {
                     StatusCode = statusCode,
                     Message = message,

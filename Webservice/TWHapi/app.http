@@ -1,5 +1,5 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
-@BASE_URL=http://localhost:5001/api
+@BASE_URL=http://localhost:5005/api
 # @BASE_URL=https://localhost:7296/api
 
 
