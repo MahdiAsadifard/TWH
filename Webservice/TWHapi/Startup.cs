@@ -25,6 +25,7 @@ namespace TWHapi
             {
                 app.UseHttpsRedirection();
             }
+            app.UseRouting();
 
             app.UseCors();
 
@@ -51,14 +52,28 @@ namespace TWHapi
 
             // Mapper: All DTOs listed in Models assebly
             _builder.Services.AddAutoMapper(Utility.GetModelsAssemblies());
-            
+
+            this.InitializeCORS();
             this.InitializeOptions();
             this.InitializeServices();
             this.CreateHostBuilder();
         }
 
 
-        //private void InitializeOptions(IServiceCollection services)
+        private void InitializeCORS()
+        {
+            _builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder
+                        .WithOrigins(_builder.Configuration.GetSection("CORS:AllowedOrigins").Get<string[]>())
+                        .WithHeaders(_builder.Configuration.GetSection("CORS:AllowedHeaders").Get<string[]>())
+                        .WithMethods(_builder.Configuration.GetSection("CORS:AllowedMethods").Get<string[]>());
+                    });
+            });
+        }
         private void InitializeOptions()
         {
             _builder.Logging.ClearProviders();
@@ -82,12 +97,12 @@ namespace TWHapi
             var envs = Environment.GetEnvironmentVariables();
             foreach (var item in envs)
             {
-                Console.WriteLine("==== env:  "+ item);
+                Console.WriteLine("==== env:  " + item);
             }
             var x = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine("==========================x ASPNETCORE_ENVIRONMENT : " + x);
             // TODO : change url based on dev / prod
-            _builder.WebHost.UseUrls( "http://*:5001");
+            _builder.WebHost.UseUrls("http://*:5001");
         }
     }
 }
