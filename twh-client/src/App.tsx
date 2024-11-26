@@ -1,27 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { FluentProvider, webLightTheme, webDarkTheme } from "@fluentui/react-components"
 import './App.css';
-import ProfileView from './Profile/ProfileView';
+
+import LoginContainer from './Login/LoginContainer';
+import HomeContainer from './Loggedin/Home/HomeContainer';
 
 function App() {
+  const [loggin, setLoggin] = useState(false);
+
+  const loginCallback = (val: any) => {
+    setLoggin(true);
+  }
+
   return (
-    <div className="App">
-      <ProfileView />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <FluentProvider theme={webLightTheme}>
+      {loggin ? (
+          <HomeContainer />
+        ): (
+          <LoginContainer callback={(e: any)=>loginCallback(e)} />
+      )}
+    </FluentProvider>
   );
 }
 
