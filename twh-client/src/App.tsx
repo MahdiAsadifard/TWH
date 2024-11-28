@@ -1,24 +1,13 @@
-import React, { useState } from 'react';
 import { FluentProvider, webLightTheme, webDarkTheme } from "@fluentui/react-components"
-import './App.css';
-
-import LoginContainer from './Login/LoginContainer';
-import HomeContainer from './Loggedin/Home/HomeContainer';
+import { RouterProvider }  from "react-router"
+import { router } from './Routs/Router';
 
 function App() {
-  const [loggin, setLoggin] = useState(false);
 
-  const loginCallback = (val: any) => {
-    setLoggin(true);
-  }
 
   return (
     <FluentProvider theme={webLightTheme}>
-      {loggin ? (
-          <HomeContainer />
-        ): (
-          <LoginContainer callback={(e: any)=>loginCallback(e)} />
-      )}
+      <RouterProvider router={router} />
     </FluentProvider>
   );
 }

@@ -61,15 +61,15 @@ const useStyles = makeStyles({
     root: {
         overflow: "hidden",
         display: "flex",
-        height: "100vh",
+       height: "100vh",
     },
     rootClosed: {
-        alignItems: 'flex-start',
+        //alignItems: 'flex-start',
     },
     content: {
         flex: "1",
         padding: "10px",
-        display: "grid",
+        //display: "grid",
         //justifyContent: "flex-start",
         //alignItems: "flex-start",
     },
@@ -108,7 +108,7 @@ const Nav: React.FunctionComponent<IProps> = ({
     children
 }): React.ReactElement => {
   const styles = useStyles();
-console.log(navProps)
+
   const typeLableId = useId("type-label");
   const linkLabelId = useId("link-label");
   const multipleLabelId = useId("multiple-label");
@@ -132,7 +132,7 @@ console.log(navProps)
   return (
     <div className={`${styles.root} ${!isOpen && styles.rootClosed}`}>
       <NavDrawer
-        defaultSelectedValue="2"
+        defaultSelectedValue="1"
         defaultSelectedCategoryValue=""
         open={isOpen}
         type={type}
