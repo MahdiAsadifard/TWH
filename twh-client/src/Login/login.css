@@ -1,0 +1,87 @@
+/* Root container: center in the screen */
+.root {
+    display: flex;
+    justify-content: center;
+    /* Horizontally center */
+    align-items: center;
+    /* Vertically center */
+    height: 100vh;
+    /* Full viewport height */
+    margin: 0;
+}
+
+/* Fields container: center within root */
+.fields {
+    display: flex;
+    flex-direction: column;
+    /* Stack children vertically */
+    gap: 16px;
+    /* Add space between rows */
+    width: 100%;
+    max-width: 400px;
+    /* Optional: restrict width of the form */
+    padding: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Optional: add shadow */
+    background-color: #fff;
+    /* Optional: background for the form */
+    border-radius: 8px;
+    /* Optional: rounded corners */
+}
+
+/* Row: a container with two columns (label and input) */
+.row {
+    display: flex;
+    flex-direction: column;
+    /* Stack label and input vertically */
+    gap: 8px;
+    /* Space between label and input */
+}
+
+/* Label styling */
+label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Input styling */
+input {
+    width: 100%;
+    /* Take up full width of the column */
+    padding: 8px;
+    /* Padding inside the input */
+    font-size: 14px;
+    /* Adjust font size */
+    border: 1px solid #ccc;
+    /* Light gray border */
+    border-radius: 4px;
+    /* Rounded corners */
+    box-sizing: border-box;
+    /* Include padding in width calculation */
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    /* Button takes full width */
+    padding: 12px;
+    /* Add vertical and horizontal padding */
+    font-size: 16px;
+    /* Increase font size */
+    border: none;
+    /* Remove border */
+    border-radius: 4px;
+    /* Rounded corners */
+    background-color: #0078d4;
+    /* Primary color */
+    color: #fff;
+    /* White text */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+}
+
+button:hover {
+    background-color: #b1c4d4;
+    /* Darker shade on hover */
+}
