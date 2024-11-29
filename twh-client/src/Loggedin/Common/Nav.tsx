@@ -1,5 +1,6 @@
 import { DrawerProps } from "@fluentui/react-components";
-import React, { PropsWithChildren, useState } from "react";
+import React, { useState } from "react";
+import { Outlet, useNavigate, NavLink } from "react-router";
 import {
   AppItem,
   Hamburger,
@@ -55,7 +56,11 @@ import {
   PreviewLink20Regular,
   bundleIcon,
   PersonCircle32Regular,
+  DoorArrowLeft20Regular,
+  DoorArrowLeft20Filled
 } from "@fluentui/react-icons";
+
+import { paths } from "../../Routs/Router";
 
 const useStyles = makeStyles({
     root: {
@@ -95,6 +100,7 @@ const TrainingPrograms = bundleIcon(BoxMultiple20Filled, BoxMultiple20Regular);
 const CareerDevelopment = bundleIcon(PeopleStar20Filled, PeopleStar20Regular);
 const Analytics = bundleIcon(DataArea20Filled, DataArea20Regular);
 const Reports = bundleIcon(DocumentBulletListMultiple20Filled, DocumentBulletListMultiple20Regular);
+const Signout = bundleIcon(DoorArrowLeft20Filled, DoorArrowLeft20Regular);
 
 type DrawerType = Required<DrawerProps>["type"];
 
@@ -105,20 +111,15 @@ interface IProps extends  React.PropsWithChildren {
 // const Nav = (props: Partial<NavDrawerProps>) => {
 const Nav: React.FunctionComponent<IProps> = ({
     navProps,
-    children
 }): React.ReactElement => {
+  const navigate = useNavigate();
   const styles = useStyles();
 
-  const typeLableId = useId("type-label");
-  const linkLabelId = useId("link-label");
-  const multipleLabelId = useId("multiple-label");
-
   const [isOpen, setIsOpen] = useState(true);
-  const [enabledLinks, setEnabledLinks] = useState(true);
   const [type, setType] = useState<DrawerType>("inline");
   const [isMultiple, setIsMultiple] = useState(true);
 
-  const linkDestination = enabledLinks ? "https://www.bing.com" : "";
+  const linkDestination = (path = paths.all) => navigate(path);
 
   const renderHamburgerWithToolTip = () => {
     return (
@@ -127,7 +128,6 @@ const Nav: React.FunctionComponent<IProps> = ({
       </Tooltip>
     );
   };
-
 
   return (
     <div className={`${styles.root} ${!isOpen && styles.rootClosed}`}>
@@ -143,30 +143,33 @@ const Nav: React.FunctionComponent<IProps> = ({
         <NavDrawerBody>
           <AppItem
             icon={<PersonCircle32Regular />}
-            as="a"
-            href={linkDestination}
+            as="button"
+            onClick={()=>{
+              linkDestination(paths.profile)
+            }}
           >
             Mahdi Asadifard
           </AppItem>
-          <NavItem href={linkDestination} icon={<Dashboard />} value="1">
+          <NavItem as="button" onClick={() => linkDestination(paths.dashboard)} icon={<Dashboard />} value="1">
             Dashboard
           </NavItem>
-          <NavItem href={linkDestination} icon={<Announcements />} value="2">
+          <NavItem as="button" onClick={() => linkDestination()} icon={<Announcements />} value="2">
             Announcements
           </NavItem>
           <NavItem
-            href={linkDestination}
+            as="button"
+            onClick={() => linkDestination()}
             icon={<EmployeeSpotlight />}
             value="3"
           >
             Employee Spotlight
           </NavItem>
-          <NavItem icon={<Search />} href={linkDestination} value="4">
+          <NavItem icon={<Search />} as="button" onClick={() => linkDestination()}value="4">
             Profile Search
           </NavItem>
           <NavItem
             icon={<PerformanceReviews />}
-            href={linkDestination}
+            as="button" onClick={() => linkDestination()}
             value="5"
           >
             Performance Reviews
@@ -177,10 +180,10 @@ const Nav: React.FunctionComponent<IProps> = ({
               Job Postings
             </NavCategoryItem>
             <NavSubItemGroup>
-              <NavSubItem href={linkDestination} value="7">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="7">
                 Openings
               </NavSubItem>
-              <NavSubItem href={linkDestination} value="8">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="8">
                 Submissions
               </NavSubItem>
             </NavSubItemGroup>
@@ -198,10 +201,10 @@ const Nav: React.FunctionComponent<IProps> = ({
               Retirement
             </NavCategoryItem>
             <NavSubItemGroup>
-              <NavSubItem href={linkDestination} value="13">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="13">
                 Plan Information
               </NavSubItem>
-              <NavSubItem href={linkDestination} value="14">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="14">
                 Fund Performance
               </NavSubItem>
             </NavSubItemGroup>
@@ -216,10 +219,10 @@ const Nav: React.FunctionComponent<IProps> = ({
               Career Development
             </NavCategoryItem>
             <NavSubItemGroup>
-              <NavSubItem href={linkDestination} value="17">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="17">
                 Career Paths
               </NavSubItem>
-              <NavSubItem href={linkDestination} value="18">
+              <NavSubItem as="button" onClick={() => linkDestination()} value="18">
                 Planning
               </NavSubItem>
             </NavSubItemGroup>
@@ -228,40 +231,17 @@ const Nav: React.FunctionComponent<IProps> = ({
           <NavItem target="_blank" icon={<Analytics />} value="19">
             Workforce Data
           </NavItem>
-          <NavItem href={linkDestination} icon={<Reports />} value="20">
+          <NavItem as="button" onClick={() => linkDestination()} icon={<Reports />} value="20">
             Reports
+          </NavItem>
+          <NavItem as="button" onClick={() => linkDestination(paths.signout)} icon={<Signout />} value="21">
+            Signout
           </NavItem>
         </NavDrawerBody>
       </NavDrawer>
       <div className={styles.content}>
-        {children}
         {!isOpen && renderHamburgerWithToolTip()}
-        <div className={styles.field}>
-          <Label id={typeLableId}>Type</Label>
-          <RadioGroup
-            value={type}
-            onChange={(_, data) => setType(data.value as DrawerType)}
-            aria-labelledby={typeLableId}
-          >
-            <Radio value="overlay" label="Overlay (Default)" />
-            <Radio value="inline" label="Inline" />
-          </RadioGroup>
-          <Label id={linkLabelId}>Links</Label>
-          <Switch
-            checked={enabledLinks}
-            onChange={(_, data) => setEnabledLinks(!!data.checked)}
-            label={enabledLinks ? "Enabled" : "Disabled"}
-            aria-labelledby={linkLabelId}
-          />
-
-          <Label id={multipleLabelId}>Categories</Label>
-          <Switch
-            checked={isMultiple}
-            onChange={(_, data) => setIsMultiple(!!data.checked)}
-            label={isMultiple ? "Multiple" : "Single"}
-            aria-labelledby={multipleLabelId}
-          />
-        </div>
+        <Outlet />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ interface IProps {
     callback?: ((e: boolean) => void);
 };
 
+// TODO: handle auto login
+
 const LoginContainer: React.FunctionComponent<IProps> = ({
     callback
 }): React.ReactElement => {
