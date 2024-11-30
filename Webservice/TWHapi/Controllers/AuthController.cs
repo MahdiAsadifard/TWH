@@ -56,9 +56,13 @@ namespace TWHapi.Controllers
             {
                 throw new ApiException(ex.ErrorCode, ex.Message, ex.StatusCode, ex);
             }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentNullException($"Error on Login user. {e.Message} \n {e.InnerException?.Message}", e);
+            }
             catch (Exception e)
             {
-                throw new Exception("Error on Login user.", e);
+                throw new Exception("Error on Login user." + e.Message + e.InnerException?.Message, e);
             }
         }
     }

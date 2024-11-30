@@ -55,21 +55,22 @@
 
             switch (exception)
             {
+                case ArgumentNullException:
                 case ArgumentException:
                     statusCode = HttpStatusCode.BadRequest;
-                    message = "A required argument was null";
+                    message = "A required argument was null: " + exception.Message;
                     break;
                 case KeyNotFoundException:
                     statusCode = HttpStatusCode.NotFound;
-                    message = "The requested resource was not found";
+                    message = "The requested resource was not found: " + exception.Message;
                     break;
                 case UnauthorizedAccessException:
                     statusCode = HttpStatusCode.Unauthorized;
-                    message = "Unauthorized access";
+                    message = "Unauthorized access: " + exception.Message;
                     break;
                 default:
                     statusCode = HttpStatusCode.InternalServerError;
-                    message = "An unexpected error eccured";
+                    message = "An unexpected error eccured: " + exception.Message;
                     break;
             }
 
