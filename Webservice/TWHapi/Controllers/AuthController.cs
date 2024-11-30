@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.Exceptions;
 using Core.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.Login;
 using Models.DTOs.User;
@@ -30,6 +31,7 @@ namespace TWHapi.Controllers
             this._authOperations = authOperations;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<ServiceResponse<LoginRsponseDTO>> Login([FromBody] LoginRequestDTO submission)
