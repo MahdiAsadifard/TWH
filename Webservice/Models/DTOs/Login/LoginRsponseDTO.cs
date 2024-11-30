@@ -1,4 +1,5 @@
 ﻿using Models.DTOs.JWT;
+using Models.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,7 @@ namespace Models.DTOs.Login
 {
     public class LoginRsponseDTO
     {
-        public string FirstName { get; set; }
-        public string Lastname { get; set; }
         public JwtCarrierDTO Token { get; set; }
+        public UserResponseDTO User { get; set; }
     }
 }

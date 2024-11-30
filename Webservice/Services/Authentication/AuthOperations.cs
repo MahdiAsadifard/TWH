@@ -16,6 +16,8 @@ using Core.Common;
 using Models.DTOs.Login;
 using Microsoft.Extensions.Configuration;
 using Models.DTOs.JWT;
+using AutoMapper;
+using Models.DTOs.User;
 
 namespace Services.Authentication
 {
@@ -24,15 +26,18 @@ namespace Services.Authentication
         private readonly IConfiguration _configuration;
         private readonly IUserOperations _userOperations;
         private readonly IJWTHelper _jWTHelper;
+        private readonly IMapper _mapper;
 
         public AuthOperations(
             IConfiguration configuration,
             IUserOperations userOperations,
-            IJWTHelper jwtHelper)
+            IJWTHelper jwtHelper,
+            IMapper mapper)
         {
             this._userOperations = userOperations;
             this._jWTHelper = jwtHelper;
             this._configuration = configuration;
+            this._mapper = mapper;
         }
         public async Task<ServiceResponse<UserRecord>> GetUsersByEmailAsync(string email)
         {
@@ -78,16 +83,17 @@ namespace Services.Authentication
             }
 
             var token = _jWTHelper.GenerateJWTToken(userRecord);
+
+            var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
             
             var reponse = new LoginRsponseDTO
             {
-                FirstName = userRecord.FirstName,
-                Lastname = userRecord.LastName,
                 Token = new JwtCarrierDTO
                 {
                     AccessToken = token,
                     expiry = _configuration.GetSection("JWT:expiry").Get<string>(),
-                }
+                },
+                User = uderDto
             };
             return new ServiceResponse<LoginRsponseDTO>(reponse);
         }
