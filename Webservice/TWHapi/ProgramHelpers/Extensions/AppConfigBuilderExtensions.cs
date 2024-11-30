@@ -20,6 +20,8 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             app.UseCors();
 
+            app.UseAuthentication();
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseHttpsRedirection();

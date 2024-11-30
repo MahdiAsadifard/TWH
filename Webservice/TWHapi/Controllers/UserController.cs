@@ -4,25 +4,27 @@ using Services.Interfaces;
 using AutoMapper;
 using Models.DTOs.User;
 using Core.NLogs;
-using Newtonsoft.Json.Serialization;
 using Core.Response;
-using System.Net;
 using Core.Exceptions;
+using Services.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TWHapi.Controllers
 {
-    [ApiController]
     [Route("api/user")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
+        private readonly IJWTHelper _jwtHelper;
         private readonly IUserOperations _user;
         private readonly IMapper _mapper;
-        public UserController(IUserOperations user, IMapper mapper)
+        public UserController(IUserOperations user, IMapper mapper, IJWTHelper jwhHelper)
         {
             _user = user;
             _mapper = mapper;
+            this._jwtHelper = jwhHelper;
         }
 
+        [Authorize]
         [Route("")]
         [HttpGet]
         public async Task<ServiceResponse<IEnumerable<UserResponseDTO>>> GetUsersAsync()
@@ -36,7 +38,8 @@ namespace TWHapi.Controllers
             var dto = _mapper.Map<IEnumerable<UserResponseDTO>>(response.Data);
             return new ServiceResponse<IEnumerable<UserResponseDTO>>(dto);
         }
-        
+
+        [Authorize]
         [Route("{uri}")]
         [HttpGet]
         public async Task<ServiceResponse<UserResponseDTO>> GetUsersByUriAsync([FromRoute] string uri)
@@ -56,16 +59,18 @@ namespace TWHapi.Controllers
             }
             catch (Exception e)
             {
-                throw new Exception($"Error on getting user uri: {uri}, message: {e.Message}");
+                throw new Exception($"UserController/GetUsersByUriAsync: Error on getting user uri: {uri}, message: {e.Message}");
             }
         }
 
+    
         [HttpPost("")]
         public async Task<ServiceResponse<UserResponseDTO>> InsertOneAsync([FromBody]UserRequestDTO submission)
         {
             try
             {
                 var response = await _user.InsertOneAsync(submission);
+
 
                 if (!response.IsSuccess) return new ServiceResponse<UserResponseDTO>(response.Message, response.StatusCode);
 
@@ -74,7 +79,7 @@ namespace TWHapi.Controllers
             }
             catch (Exception ex)
             {
-                var msg = $"UserController: Error on adding new user: {ex.Message} - \n trace:\n {ex}";
+                var msg = $"UserController/InsertOneAsync: Error on adding new user: {ex.Message} - \n trace:\n {ex}";
                 NLogHelpers<UserController>.Logger.Info(msg);
                 throw new Exception("Error: " + ex.Message);
             }

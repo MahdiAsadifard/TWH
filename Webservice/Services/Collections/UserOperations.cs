@@ -49,7 +49,7 @@ namespace Services.Collections
                 {
                     predictBuilder.Or(
                         predictBuilder.Eq(z => z.Disabled, false),
-                        predictBuilder.Exists(z => z.Disabled, false)
+                        predictBuilder.Exists(z => z.Disabled, true)
                         )
                 };
 
@@ -147,5 +147,6 @@ namespace Services.Collections
                 return new ServiceResponse<UserRecord>(msg, HttpStatusCode.BadRequest);
             }
         }
+
     }
 }

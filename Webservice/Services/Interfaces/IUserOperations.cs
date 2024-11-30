@@ -20,7 +20,6 @@ namespace Services.Interfaces
             int skip = 0);
 
         Task<ServiceResponse<UserRecord>> GetUserByUriAsync(string uri);
-
         Task<ServiceResponse<UserRecord>> InsertOneAsync(UserRequestDTO user);
     }
 }

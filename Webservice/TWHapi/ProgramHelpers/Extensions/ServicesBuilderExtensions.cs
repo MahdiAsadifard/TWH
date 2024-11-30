@@ -1,6 +1,9 @@
 ﻿using Database.Model;
 using Microsoft.Extensions.Configuration;
 using Models.Common;
+using Services.Authentication;
+using Services.Collections;
+using Services.Interfaces;
 
 namespace TWHapi.ProgramHelpers.Extensions
 {
@@ -14,10 +17,14 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             services.Configure<DatabaseSettings>(configuration.GetSection("ServerInfo"));
 
+            services.InitializeJWT(configuration);
+
             // Mapper: All DTOs listed in Models assebly
             services.AddAutoMapper(Utility.GetModelsAssemblies());
             services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
-            services.AddScoped<Services.Interfaces.IUserOperations, Services.Collections.UserOperations>();
+            services.AddScoped<IUserOperations, UserOperations>();
+            services.AddScoped<IAuthOperations, AuthOperations>();
+            services.AddScoped<IJWTHelper, JWTHelper>();
 
             return services;
         }
