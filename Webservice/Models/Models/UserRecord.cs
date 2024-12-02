@@ -39,8 +39,19 @@ namespace Models.Models
         [BsonIgnoreIfNull]
         public string? Phone { get; set; }
 
+        private string _email;
         [BsonRequired]
-        public required string Email { get; set; }
+        public required string Email 
+        {
+            get
+            {
+                return _email.ToLower();
+            }
+            set
+            {
+                _email = value.ToLower();
+            }
+        }
 
         [BsonRequired]
         public required byte[] HashPassword { get; set; }

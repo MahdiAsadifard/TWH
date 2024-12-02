@@ -41,13 +41,17 @@ namespace TWHapi.Controllers
                 var userResponse = await _authOperations.GetUsersByEmailAsync(submission.Email);
                 if (!userResponse.IsSuccess)
                 {
-                    return new ServiceResponse<LoginRsponseDTO>(userResponse.Message, userResponse.StatusCode);
+                    throw new ApiException(ApiExceptionCode.BadRequest, userResponse.Message, userResponse.StatusCode);
+                }
+                if (userResponse.Data is null)
+                {
+                    throw new ApiException(ApiExceptionCode.NotFound, "user not found", System.Net.HttpStatusCode.NotFound);
                 }
 
                 var validatePassword = await _authOperations.ValidateUserLogin(userResponse.Data, submission);
                 if (!validatePassword.IsSuccess)
                 {
-                    return new ServiceResponse<LoginRsponseDTO>(validatePassword.Message, validatePassword.StatusCode);
+                    throw new ApiException(ApiExceptionCode.BadRequest, validatePassword.Message, validatePassword.StatusCode);
                 }
 
                 return validatePassword;

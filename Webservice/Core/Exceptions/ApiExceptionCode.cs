@@ -13,6 +13,10 @@ namespace Core.Exceptions
         /// </summary>
         UnknownError,
         /// <summary>
+        /// 400
+        /// </summary>
+        BadRequest,
+        /// <summary>
         /// 401
         /// </summary>
         Unauthorized,

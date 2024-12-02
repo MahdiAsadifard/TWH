@@ -44,7 +44,7 @@ namespace Services.Authentication
             try
             {
                 var filters = new List<FilterDefinition<UserRecord>>();
-                filters.Add(Builders<UserRecord>.Filter.Eq(x => x.Email, email));
+                filters.Add(Builders<UserRecord>.Filter.Eq(x => x.Email, email.ToLower()));
 
                 var users = await _userOperations.GetUsersAsync(filters);
 
