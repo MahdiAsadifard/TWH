@@ -1,10 +1,11 @@
 
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import { Button, useId, Input, Label } from "@fluentui/react-components";
-import { Mail24Regular, Key20Regular } from "@fluentui/react-icons";
+import { Mail24Regular, EyeOff20Filled, Eye20Regular } from "@fluentui/react-icons";
 
 import { CheckLogin } from "../Mongo/Auth/AuthOperations";
 import "./login.css";
+const CustomButton = lazy(() => import("../Loggedin/Common/CustomButton"));
 
 interface IProps {
     callback?: ((e: boolean) => void);
@@ -19,10 +20,20 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [showPassword, setShowPassword]=useState(false);
 
-  const emailId = useId("input-email");
-  const passwordId = useId("input-password");
+    const emailId = useId("input-email");
+    const passwordId = useId("input-password");
 
+    const hideAndShowButton =
+        <CustomButton
+            shape="circular"
+            icon={showPassword ? <Eye20Regular /> : <EyeOff20Filled /> }
+            appearence="transparent"
+            onClick={(e)=>{
+                setShowPassword(prev => !prev);
+            }}
+        />;
 
     const onSignin = async (e: any) => {
         const submission = {
@@ -43,7 +54,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                 </div>
                 <div className="row">
                     <Label htmlFor={passwordId} className="label">Password</Label>
-                    <Input placeholder="*****" type="password"  id={passwordId} contentAfter={<Key20Regular />} value={password} onChange={(e) => setPassword(e.target.value)}  />
+                    <Input placeholder="*****" type={showPassword ? "text" : "password"}  id={passwordId} contentAfter={hideAndShowButton} value={password} onChange={(e) => setPassword(e.target.value)}  />
                 </div>
                     <Button appearance="primary" onClick={onSignin}  >Signin</Button>
             </form>
@@ -51,4 +62,4 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
     );
 };
 
-export default LoginContainer;
+export default LoginContainer;  

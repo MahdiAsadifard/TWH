@@ -38,7 +38,7 @@ const CustomDialog: React.FC<IProps> = ({
     },
     openFromOutside = false,
     closeAndBackHistory = false,
-}) => {
+}): React.ReactElement => {
     const[isOpen, setIsOpen] = useState(false || openFromOutside);
 
     return(
