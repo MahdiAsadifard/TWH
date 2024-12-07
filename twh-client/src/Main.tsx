@@ -4,6 +4,8 @@ import LoginContainer from './Login/LoginContainer';
 import {  useNavigate } from 'react-router';
 import { paths } from './Routs/Router';
 
+import "./Styles/Commons.css";
+
 // TODO: handle auto login
 const Main = () => {
   const navigate = useNavigate();
@@ -12,9 +14,9 @@ const Main = () => {
     navigate(paths.signedin);
   }
   return (
-    <>
+    <div className='root'>
       <LoginContainer callback={(e: any)=>loginCallback(e)} />
-    </>
+    </div>
   );
 }
 

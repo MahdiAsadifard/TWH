@@ -1,7 +1,8 @@
 import { FluentProvider, webLightTheme } from "@fluentui/react-components"
 import { RouterProvider }  from "react-router"
 import { router } from './Routs/Router';
-import "./App.css"
+
+import "./Styles/App.css";
 
 function App() {
   return (

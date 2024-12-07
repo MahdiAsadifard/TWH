@@ -1,0 +1,32 @@
+.container {
+    height: 100vh;
+    align-content: center;
+}
+
+.card {
+    margin: auto;
+    width: 80vw;
+    max-width: 1000px;
+    padding: 20px;
+    border-radius: 20px;
+    height: 50vh;
+}
+
+.header {
+     /* flex: 1; */
+}
+
+.preview {
+    align-self: flex-end;
+}
+
+.textbox {
+    padding: 5px;
+    width: 100%;
+}
+
+.footer {
+    flex: 1;
+    align-items: flex-end;
+    justify-content: flex-end;
+}

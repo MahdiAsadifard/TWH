@@ -1,10 +1,26 @@
 
 import React, { lazy, useState } from "react";
-import { Button, useId, Input, Label } from "@fluentui/react-components";
+import {
+    makeStyles,
+    Button,
+    useId,
+    Input,
+    Label,
+    Body1,
+    Caption1
+} from "@fluentui/react-components";
 import { Mail24Regular, EyeOff20Filled, Eye20Regular } from "@fluentui/react-icons";
 
+import {
+    Card,
+    CardHeader,
+    CardFooter,
+    CardPreview
+} from "@fluentui/react-components";
+
+
 import { CheckLogin } from "../Mongo/Auth/AuthOperations";
-import "./login.css";
+import "../Styles/Login.css";
 const CustomButton = lazy(() => import("../Loggedin/Common/CustomButton"));
 
 interface IProps {
@@ -17,6 +33,8 @@ interface IProps {
 const LoginContainer: React.FunctionComponent<IProps> = ({
     callback
 }): React.ReactElement => {
+
+    const styles = useStyles();
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -42,24 +60,46 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
         };
         console.log(submission);
         const response = await CheckLogin(submission);
-        console.log("loginCOntainer response: ", response);
-        // if(callback) callback(true);
+        console.log("loginContainer response: ", response);
+        if(callback) callback(true);
     };
+
     return (
-        <div className="root">
-            <form noValidate autoComplete="off"  className="fields">
-                <div className="row">
-                    <Label htmlFor={emailId} className="label">Email</Label>
-                    <Input placeholder="johndoe@mail.com" type="email" id={emailId} contentAfter={<Mail24Regular />} value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-                <div className="row">
-                    <Label htmlFor={passwordId} className="label">Password</Label>
-                    <Input placeholder="*****" type={showPassword ? "text" : "password"}  id={passwordId} contentAfter={hideAndShowButton} value={password} onChange={(e) => setPassword(e.target.value)}  />
-                </div>
-                    <Button appearance="primary" onClick={onSignin}  >Signin</Button>
-            </form>
+        <div className={` center full-height `}>
+            <Card className={`card `} orientation="vertical">
+                <CardHeader 
+                    className=""
+                    header={
+                        <Body1>
+                            <b>Sign in</b>
+                            <div><Caption1>to continue to TWH</Caption1></div>
+                        </Body1>
+                    }
+                />
+                <CardPreview className={`preview ${styles.cardPreview}`}>
+                     <span>
+                            <span className="gap">
+                                <Label htmlFor={emailId}>Email</Label>
+                                <Input className="textbox" placeholder="johndoe@mail.com" type="email" id={emailId} contentAfter={<Mail24Regular />} value={email} onChange={(e) => setEmail(e.target.value)} />
+                            </span>
+                            <span className="gap">
+                                <Label htmlFor={passwordId}>Password</Label>
+                                <Input className={`textbox `} placeholder="*****" type={showPassword ? "text" : "password"}  id={passwordId} contentAfter={hideAndShowButton} value={password} onChange={(e) => setPassword(e.target.value)}  />
+                            </span>
+                    </span>
+                </CardPreview>
+                <CardFooter className="footer">
+                    <Button className="" appearance="primary" onClick={onSignin}>Signin</Button>
+                </CardFooter>
+            </Card>
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    cardPreview: {
+        maxWidth: '50vw'
+    }
+});
 
 export default LoginContainer;  
