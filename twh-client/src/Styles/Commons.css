@@ -18,3 +18,7 @@
 .gap {
     padding: 10px;
 }
+
+.danger {
+    color: #b90303;
+}

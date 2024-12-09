@@ -1,8 +1,9 @@
-import { WebserviceUrl } from '../../Global/Config'
+import { WebserviceUrl } from '../../Global/Config';
+import { StatusCode } from "../../Global/RequestReponseHelper";
 
 export const CheckLogin = async(submission: any) => {
     const callback = {
-        statusCode: 500,
+        statusCode: StatusCode.InternalServerError,
         success: false,
         response: null
     };
@@ -15,11 +16,10 @@ export const CheckLogin = async(submission: any) => {
         body: JSON.stringify(submission)
     })
     .then(response => {
-        console.log("response status: ", response?.status)
         callback.statusCode = response.status;
         switch (response.status) {
-            case 200:
-            case 204:
+            case StatusCode.OK:
+            case StatusCode.NoContent:
                 callback.success = true;
                 return response.json();
                 break;
@@ -33,8 +33,6 @@ export const CheckLogin = async(submission: any) => {
     })
     .catch(error => {
         console.log(`Error on login`+ error);
-    })
-    .finally(()=>{
-        return callback;
     });
+    return callback;
 }; 
