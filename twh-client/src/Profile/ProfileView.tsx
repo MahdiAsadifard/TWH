@@ -1,10 +1,9 @@
-import * as UserServices from "./UserServices";
 
 
 const ProfileView = () => {
     const click = async(url?: string) => {
                 console.log("clicked")
-                await UserServices.GetUsers(url);
+                // await UserServices.GetUsers(url);
              }
     return (
         <div>

@@ -18,11 +18,11 @@ import {
     CardPreview
 } from "@fluentui/react-components";
 
-
 import "../Styles/Login.css";
-import { CheckLogin } from "../Mongo/Auth/AuthOperations";
-import UseCustomToast from  "../Loggedin/Common/UseCustomToast";
+import useCustomToast from  "../Loggedin/Common/UseCustomToast";
 import { StatusCode } from "../Global/RequestReponseHelper";
+import useFetch from "../Loggedin/Common/UseFetch";
+import Loading from "../Loggedin/Common/Loading";
 
 const CustomButton = lazy(() => import("../Loggedin/Common/CustomButton"));
 
@@ -38,7 +38,8 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
 }): React.ReactElement => {
 
     const styles = useStyles();
-    const { showToast, ToasterComponent } = UseCustomToast();
+    const { showToast, ToasterComponent } = useCustomToast();
+    const { error, loading, fetchResponse, ApiRequest } =  useFetch();
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -62,14 +63,11 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             Email: email,
             Password: password
         };
-        const { success, statusCode, response } = await CheckLogin(submission);
-        console.log("loginContainer response: ", response, statusCode, success);
-        if(success) {
-            if(callback) callback(true);
-        }else {
+        await ApiRequest({url: `auth/login`, method: 'POST', body: submission  });
 
+        if(error || !fetchResponse.success) {
             let title = 'Error', body = '';
-            switch (statusCode) {
+            switch (fetchResponse.statusCode) {
                 case StatusCode.Unauthorized:
                     title = 'Unauthorized';
                     body = 'Invalid email or password, try again!';
@@ -87,13 +85,16 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                     break;
             }
            showToast({
-                title: title,
-                body: body,
+                title,
+                body
             });
+        }else {
+            if(callback) callback(true);
         }
     };
 
-    return (
+    if(loading) return <Loading FullScreen={true} />;
+    return  (
         <div className={` center full-height `}>
             <Card className={`card `} orientation="vertical">
                 <CardHeader 
@@ -106,7 +107,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                     }
                 />
                 <CardPreview className={`preview ${styles.cardPreview}`}>
-                     <span>
+                    <span>
                         <span className="gap">
                             <Label htmlFor={emailId}>Email</Label>
                             <Input className="textbox" placeholder="johndoe@mail.com" type="email" id={emailId} contentAfter={<Mail24Regular />} value={email} onChange={(e) => setEmail(e.target.value)} />
