@@ -7,7 +7,8 @@ import {
     Input,
     Label,
     Body1,
-    Caption1
+    Caption1,
+    Checkbox
 } from "@fluentui/react-components";
 import { Mail24Regular, EyeOff20Filled, Eye20Regular } from "@fluentui/react-icons";
 
@@ -44,6 +45,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword]=useState(false);
+    const [rememberMe, setRememberMe]=useState(false);
 
     const emailId = useId("input-email");
     const passwordId = useId("input-password");
@@ -58,12 +60,13 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             }}
         />;
 
+
     const onSignin = async (e: any) => {
         const submission = {
             Email: email,
             Password: password
         };
-        await ApiRequest({url: `auth/login`, method: 'POST', body: submission  });
+        await ApiRequest({ url: `auth/login`, method: 'POST', body: submission, withToken: false  });
 
         if(error || !fetchResponse.success) {
             let title = 'Error', body = '';
@@ -89,7 +92,14 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                 body
             });
         }else {
-            if(callback) callback(true);
+            const x = fetchResponse.response as any;
+            const now = new Date();
+            console.log(now);
+            
+            now.setSeconds(now.getSeconds() + x.data.token.expiry);
+            console.log(now.toUTCString());
+            document.cookie = `twh_token=${x.data.token?.accessToken};expires=${now.toUTCString()};domain=${window.location.hostname}`;
+            // if(callback) callback(true);
         }
     };
 
@@ -116,6 +126,12 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                             <Label htmlFor={passwordId}>Password</Label>
                             <Input className={`textbox `} placeholder="*****" type={showPassword ? "text" : "password"}  id={passwordId} contentAfter={hideAndShowButton} value={password} onChange={(e) => setPassword(e.target.value)}  />
                         </span>
+
+                    <Checkbox
+                        checked={rememberMe}
+                        label={`Remember me`}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        />
                     </span>
                 </CardPreview>
                 <CardFooter className="footer">

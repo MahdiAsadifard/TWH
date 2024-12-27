@@ -6,7 +6,7 @@ import { paths } from './Routs/Router';
 
 import "./Styles/Commons.css";
 
-// TODO: handle auto login
+// TODO: handle auto login - re generate token
 const Main = () => {
   const navigate = useNavigate();
 
