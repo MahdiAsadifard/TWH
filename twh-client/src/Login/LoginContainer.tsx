@@ -99,7 +99,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             now.setSeconds(now.getSeconds() + x.data.token.expiry);
             console.log(now.toUTCString());
             document.cookie = `twh_token=${x.data.token?.accessToken};expires=${now.toUTCString()};domain=${window.location.hostname}`;
-            // if(callback) callback(true);
+            if(callback) callback(true);
         }
     };
 
