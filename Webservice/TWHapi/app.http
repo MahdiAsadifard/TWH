@@ -2,10 +2,22 @@
 @BASE_URL=http://localhost:5005/api
 # @BASE_URL=https://localhost:7296/api
 
+@token=
+
+###
+POST {{BASE_URL}}/auth/login
+content-type: application/json
+
+{
+    "email": "mahdi@mahdi.com",
+    "password": "Mahdi@123"
+}
+
 
 ###
 GET {{BASE_URL}}/user
 content-type: application/json
+Authorization: {{token}}
 
 ###
 POST {{BASE_URL}}/user/insert
@@ -22,3 +34,6 @@ content-type: application/json
 ###
 GET {{BASE_URL}}/user/e347f
 content-type: application/json
+
+###
+GET {{BASE_URL}}/health/enqueue

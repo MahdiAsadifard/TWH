@@ -1,3 +1,4 @@
+using Core.BackgroundProcessing;
 using TWHapi.ProgramHelpers.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder
     .InitializeOptions();
 
 builder.Logging.InitializeLogging();
+builder.Services.AddHostedService<BackgroundWorker>();
 
 builder
     .Build()
