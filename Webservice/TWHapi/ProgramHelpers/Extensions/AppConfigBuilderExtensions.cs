@@ -22,15 +22,6 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             app.UseAuthentication();
 
-            app.UseMiddleware<JWTMiddleware>();
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
             return app;
         }
     }

@@ -13,6 +13,8 @@ builder
     .Build()
     .CreateHostBuilder(builder.Environment, builder.Configuration)
     .Configure()
+    .Middlewares() // Register middlewares should be after Configure() and before ConfigureTail()
+    .ConfigureTail()
     .Run();
 
 
