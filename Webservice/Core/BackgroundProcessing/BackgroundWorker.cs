@@ -1,62 +1,143 @@
-﻿using Core.Queue;
+﻿using Core.Common;
+using Core.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace Core.BackgroundProcessing
 {
-    public sealed class BackgroundWorker : BackgroundService, IBackgroundWorker
+    public sealed class BackgroundWorker : BackgroundService
     {
         private readonly ILogger<BackgroundWorker> _logger;
         private readonly IBackgroundTaskQueue _queue;
+        private readonly IOptions<BackgroundTaskQueueOptions> _backgroundTaskQueueOptions;
+
+        private CancellationToken _cancellationToken;
 
         public BackgroundWorker(
             ILogger<BackgroundWorker> logger,
-            IBackgroundTaskQueue queue)
+            IBackgroundTaskQueue queue,
+            IOptions<BackgroundTaskQueueOptions> backgroundTaskQueueOptions)
         {
             this._logger = logger;
             this._queue = queue;
+            this._backgroundTaskQueueOptions = backgroundTaskQueueOptions;
         }
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            await DoWork(cancellationToken);
+            this._cancellationToken = cancellationToken;
+
+            while (!this._cancellationToken.IsCancellationRequested)
+            {
+                var workItem = await this.GetTask();
+                await this.RunTask(workItem);
+            }
         }
 
-        public async Task DoWork(CancellationToken cancellationToken)
+        public async Task _DoWork()
         {
-            _logger.LogInformation("Background Worker is starting.");
-            while (!cancellationToken.IsCancellationRequested)
+            _logger.LogInformation("BackgroundWorker/DoWork: Background Worker is starting.");
+            while (!this._cancellationToken.IsCancellationRequested)
             {
                 Func<CancellationToken, Task> workItem = null;
                 try
                 {
-                    workItem = await _queue.DequeuAsync(cancellationToken);
+                    throw new Exception("DOWORK EX");
+                    _logger.LogInformation("BackgroundWorker/DoWork: start dequeue item in backgroundworker.");
+                    workItem = await _queue.DequeuAsync(this._cancellationToken);
                 }
                 catch (OperationCanceledException ex)
                 {
-                    _logger.LogError(ex, "Background Worker is stopping due to cancellation.");
+                    _logger.LogError(ex, "BackgroundWorker/DoWork: Background Worker is stopping due to cancellation.");
                     throw;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "BackgroundWorker/DoWork: Error occurred dequeue in backgroundworker. Retrying in {Delay}s, ErrorMessage: {Message}",
+                       _backgroundTaskQueueOptions.Value.RetryQueueDelaySeconds,
+                       ex.Message);
+
+                    try
+                    {
+                        await CoreUtility.DelayTask(TimeSpan.FromSeconds(_backgroundTaskQueueOptions.Value.RetryQueueDelaySeconds));
+                        workItem = await _queue.DequeuAsync(this._cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        _logger.LogCritical(ex, "BackgroundWorker/DoWork: Error occurred dequeue in backgroundworker. Exiting process...");
+                        throw;
+                    }
                 }
 
                 try
                 {
                     if (workItem is not null)
                     {
-                        _logger.LogInformation("=== Worker Started picking task - IsCancellationRequested: {IsCancellationRequested}", cancellationToken.IsCancellationRequested);
-                        await workItem(cancellationToken);
+                        _logger.LogInformation("---> BackgroundWorker/DoWork: Worker Started picking task - IsCancellationRequested: {IsCancellationRequested}", this._cancellationToken.IsCancellationRequested);
+                        await workItem(this._cancellationToken);
 
-                        _logger.LogInformation("=== Worker Finished - IsCancellationRequested: {IsCancellationRequested}", cancellationToken.IsCancellationRequested);
+                        _logger.LogInformation("---> BackgroundWorker/DoWork: Worker Finished - IsCancellationRequested: {IsCancellationRequested}", this._cancellationToken.IsCancellationRequested);
                     }
                 }
                 catch (Exception)
                 {
-                    _logger.LogError("Error occurred executing work item.");
+                    _logger.LogError("BackgroundWorker/DoWork: Error occurred executing work item.");
                     throw;
                 }
             }
-            _logger.LogInformation("Background Worker is stopping.");
+            _logger.LogInformation("BackgroundWorker/DoWork: Background Worker is stopping.");
+        }
+
+        private async Task<Func<CancellationToken, Task>> GetTask()
+        {
+            _logger.LogInformation("BackgroundWorker/DoWork: Background Worker is listening...");
+            Func<CancellationToken, Task> workItem = null;
+            try
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                _logger.LogInformation("---> BackgroundWorker/GetTask: Start picking task. time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+
+                workItem = await _queue.DequeuAsync(this._cancellationToken);
+                stopwatch.Stop();
+
+                _logger.LogInformation("---> BackgroundWorker/GetTask: End picking task. time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+            }
+            catch (OperationCanceledException ex)
+            {
+                _logger.LogError(ex, "BackgroundWorker/GetTask: Background Worker is stopping due to cancellation.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BackgroundWorker/GetTask: Error occurred dequeue in backgroundworker, ErrorMessage: {Message}", ex.Message);
+                throw;
+            }
+            return workItem;
+        }
+
+        private async Task RunTask(Func<CancellationToken, Task> workItem)
+        {
+            try
+            {
+                if (workItem is not null)
+                {
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    _logger.LogInformation("---> BackgroundWorker/GetTask: Worker Started running task, time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+                    await workItem(this._cancellationToken);
+                    stopwatch.Stop();
+
+                    _logger.LogInformation("---> BackgroundWorker/RunTask: Worker Finished running task. time:[{time}]ms", stopwatch.ElapsedMilliseconds);
+                }
+            }
+            catch (Exception)
+            {
+                _logger.LogError("BackgroundWorker/RunTask: Error occurred executing work item.");
+                throw;
+            }
         }
     }
 }

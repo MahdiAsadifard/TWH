@@ -1,8 +1,5 @@
 ﻿using Core.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Channels;
 
 namespace Core.Queue
@@ -24,21 +21,31 @@ namespace Core.Queue
             _queue = Channel.CreateUnbounded<Func<CancellationToken, Task>>(options);
         }
 
-        public async ValueTask<ValueTask> EnqueueAsync(Func<CancellationToken, Task> workItem)
+        public async ValueTask<ValueTask> EnqueueAsync(Func<CancellationToken, Task> workItem, string processName)
         {
-            ArgumentsValidator.ThrowIfNull(nameof(workItem), workItem);
-
-            var tryWrite = _queue.Writer.TryWrite(workItem);
-            _logger.LogInformation("Enqueue work item. Success: {TryWrite}", tryWrite);
-
-            if (!tryWrite)
+            try
             {
-                _logger.LogInformation("Queue is full, waiting to enqueue work item.");
+                ArgumentsValidator.ThrowIfNull(nameof(workItem), workItem);
 
-                // Fallback to async wait if TryWrite fails (rare for unbounded)
-                return _queue.Writer.WriteAsync(workItem);
+                var tryWrite = _queue.Writer.TryWrite(workItem);
+                _logger.LogInformation("BackgroundTaskQueue/EnqueueAsync: Enqueue work item. Success: {TryWrite}, ProcessName {ProcessName}:",
+                    tryWrite,
+                    processName);
+
+                if (!tryWrite)
+                {
+                    _logger.LogInformation("BackgroundTaskQueue/EnqueueAsync: Queue is full, waiting to enqueue work item, ProcessName: {ProcessName}", processName);
+
+                    // Fallback to async wait if TryWrite fails (rare for unbounded)
+                    return _queue.Writer.WriteAsync(workItem);
+                }
+                return ValueTask.CompletedTask;
             }
-            return ValueTask.CompletedTask;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BackgroundTaskQueue/EnqueueAsync: Error occurred while enqueuing work item. ProcessName: {ProcessName}", processName);
+                throw;
+            }
         }
 
         public async ValueTask<Func<CancellationToken, Task>> DequeuAsync(CancellationToken cancellationToken)
@@ -46,17 +53,17 @@ namespace Core.Queue
             try
             {
                 var workItem = await _queue.Reader.ReadAsync(cancellationToken);
-                _logger.LogInformation("Dequeued work item.");
+                _logger.LogInformation("BackgroundTaskQueue/DequeuAsync: Dequeued work item.");
                 return workItem;
             }
             catch (OperationCanceledException ex)
             {
-                _logger.LogError(ex, "Error occurred while dequeuing work item.");
+                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: Error occurred while dequeuing work item.");
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while dequeuing work item.");
+                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: Error occurred while dequeuing work item.");
                 throw;
             }
         }

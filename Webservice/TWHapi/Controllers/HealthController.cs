@@ -27,21 +27,14 @@ namespace TWHapi.Controllers
         [Route("enqueue")]
         public IActionResult CheckBackgroundWorker()
         {
-            var x = _queue.EnqueueAsync(async ct =>
-            {
-                await Task.Delay(TimeSpan.FromSeconds(5), ct);
-                _logger.LogWarning("1");
-                _logger.LogWarning("2");
-                Console.WriteLine("3");
-            });
             _ = _serviceProcessing.StartProcessing(async ct =>
             {
                 _logger.LogWarning("Service Processing Task Executed.");
                 await Task.Delay(TimeSpan.FromSeconds(5), ct);
                 _logger.LogInformation("1- Service Processing Task Completed.");
                 _logger.LogInformation("2- Service Processing Task Completed.");
-            });
-            return Ok(x.Result.ToString());
+            }, ServiceProcessingName.HealthControllerCheck);
+            return Ok();
         }
     }
 }

@@ -33,9 +33,7 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Queue
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
-            // Background Services
-            services.AddSingleton<BackgroundWorker>();
-            
+
             // Processing Services
             services.AddSingleton<IServiceProcessing, ServiceProcessing>();
             

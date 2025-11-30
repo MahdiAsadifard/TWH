@@ -90,5 +90,10 @@ namespace Core.Common
             }
             return JsonConvert.SerializeObject(json, settings);
         }
+
+        public static Task DelayTask(TimeSpan delay)
+        {
+            return Task.Delay(delay);
+        }
     }
 }

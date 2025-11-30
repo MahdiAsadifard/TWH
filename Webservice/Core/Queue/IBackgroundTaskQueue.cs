@@ -14,8 +14,9 @@ namespace Core.Queue
         /// executing. Multiple calls to this method may be processed concurrently.</remarks>
         /// <param name="workItem">A delegate representing the work to execute. The delegate receives a <see cref="CancellationToken"/> that is
         /// triggered if the operation is cancelled. Cannot be null.</param>
+        /// <param name="processName">The name of the process enqueuing the work item.</param>
         /// <returns>A <see cref="ValueTask"/> that represents the asynchronous enqueue operation.</returns>
-        ValueTask<ValueTask> EnqueueAsync(Func<CancellationToken, Task> workItem);
+        ValueTask<ValueTask> EnqueueAsync(Func<CancellationToken, Task> workItem, string processName);
 
         /// <summary>
         /// Asynchronously dequeues the next available work item from the queue.

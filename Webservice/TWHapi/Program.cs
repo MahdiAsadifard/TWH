@@ -6,7 +6,7 @@ builder
     .Services
     .InitializeCORS(builder.Configuration)
     .InitializeServices(builder.Configuration)
-    .InitializeOptions();
+    .InitializeOptions(builder.Configuration);
 
 builder.Logging.InitializeLogging();
 builder.Services.AddHostedService<BackgroundWorker>();

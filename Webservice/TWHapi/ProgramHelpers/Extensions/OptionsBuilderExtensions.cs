@@ -1,8 +1,11 @@
-﻿namespace TWHapi.ProgramHelpers.Extensions
+﻿using Core.Queue;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TWHapi.ProgramHelpers.Extensions
 {
     public static class OptionsBuilderExtensions
     {
-        public static IServiceCollection InitializeOptions(this IServiceCollection services)
+        public static IServiceCollection InitializeOptions(this IServiceCollection services, IConfiguration configuration)
         {
             /// This part will change the format to Pascal-Case
             /// We are going to use Camel-Case as default behavior
@@ -10,6 +13,9 @@
             //{
             //    options.JsonSerializerOptions.PropertyNamingPolicy = null;
             //});
+
+            services.Configure<BackgroundTaskQueueOptions>(configuration.GetSection(BackgroundTaskQueueOptions.OptionName));
+            
             return services;
         }
     }
