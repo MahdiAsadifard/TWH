@@ -95,15 +95,13 @@ namespace Core.BackgroundProcessing
             Func<CancellationToken, Task> workItem = null;
             try
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                _logger.LogInformation("---> BackgroundWorker/GetTask: Start picking task. time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+                 using var spw = new StopWatchHelper();
+                
+                _logger.LogInformation("---> BackgroundWorker/GetTask: Start picking task. time: [{time}]ms", spw.ElapsedMilliseconds);
 
                 workItem = await _queue.DequeuAsync(this._cancellationToken);
-                stopwatch.Stop();
 
-                _logger.LogInformation("---> BackgroundWorker/GetTask: End picking task. time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+                _logger.LogInformation("---> BackgroundWorker/GetTask: End picking task. time: [{time}]ms", spw.ElapsedMilliseconds);
             }
             catch (OperationCanceledException ex)
             {
@@ -124,13 +122,12 @@ namespace Core.BackgroundProcessing
             {
                 if (workItem is not null)
                 {
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    _logger.LogInformation("---> BackgroundWorker/GetTask: Worker Started running task, time: [{time}]ms", stopwatch.ElapsedMilliseconds);
+                     using var spw = new StopWatchHelper();
+                    _logger.LogInformation("---> BackgroundWorker/GetTask: Worker Started running task, time: [{time}]ms", spw.ElapsedMilliseconds);
+                    
                     await workItem(this._cancellationToken);
-                    stopwatch.Stop();
 
-                    _logger.LogInformation("---> BackgroundWorker/RunTask: Worker Finished running task. time:[{time}]ms", stopwatch.ElapsedMilliseconds);
+                    _logger.LogInformation("---> BackgroundWorker/RunTask: Worker Finished running task. time:[{time}]ms", spw.ElapsedMilliseconds);
                 }
             }
             catch (Exception)
