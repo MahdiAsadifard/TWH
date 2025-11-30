@@ -1,10 +1,10 @@
 ﻿using Core.Queue;
 using Database.Model;
-using Microsoft.Extensions.Configuration;
 using Models.Common;
 using Services.Authentication;
 using Services.Collections;
 using Services.Interfaces;
+using Services.ServiceProcessing;
 using System.ComponentModel;
 
 namespace TWHapi.ProgramHelpers.Extensions
@@ -27,19 +27,28 @@ namespace TWHapi.ProgramHelpers.Extensions
             services.Configure<DatabaseSettings>(configuration.GetSection("ServerInfo"));
 
             services.InitializeJWT(configuration);
+            // JWT
+            services.AddScoped<IJWTHelper, JWTHelper>();
+            
+            // Queue
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            
+            // Background Services
+            services.AddSingleton<BackgroundWorker>();
+            
+            // Processing Services
+            services.AddSingleton<IServiceProcessing, ServiceProcessing>();
+            
+            // Service Processing
+            services.AddSingleton<IServiceProcessing, ServiceProcessing>();
 
             // Mapper: All DTOs listed in Models assebly
             services.AddAutoMapper(Utility.GetModelsAssemblies());
+            
             // Database
             services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
             services.AddScoped<IUserOperations, UserOperations>();
             services.AddScoped<IAuthOperations, AuthOperations>();
-            // JWT
-            services.AddScoped<IJWTHelper, JWTHelper>();
-            // Queue
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            // Background Services
-            services.AddSingleton<BackgroundWorker>();
 
             return services;
         }

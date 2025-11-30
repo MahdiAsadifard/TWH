@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Core.Queue;
+using Services.ServiceProcessing;
 
 namespace TWHapi.Controllers
 {
@@ -9,13 +10,16 @@ namespace TWHapi.Controllers
     {
         private readonly ILogger<HealthController> _logger;
         private readonly IBackgroundTaskQueue _queue;
+        private readonly IServiceProcessing _serviceProcessing;
 
         public HealthController(
             ILogger<HealthController> logger,
-            IBackgroundTaskQueue queue)
+            IBackgroundTaskQueue queue,
+            IServiceProcessing serviceProcessing)
         {
             this._logger = logger;
             this._queue = queue;
+            this._serviceProcessing = serviceProcessing;
         }
 
         [AllowAnonymous]
@@ -29,6 +33,13 @@ namespace TWHapi.Controllers
                 _logger.LogWarning("1");
                 _logger.LogWarning("2");
                 Console.WriteLine("3");
+            });
+            _ = _serviceProcessing.StartProcessing(async ct =>
+            {
+                _logger.LogWarning("Service Processing Task Executed.");
+                await Task.Delay(TimeSpan.FromSeconds(5), ct);
+                _logger.LogInformation("1- Service Processing Task Completed.");
+                _logger.LogInformation("2- Service Processing Task Completed.");
             });
             return Ok(x.Result.ToString());
         }
