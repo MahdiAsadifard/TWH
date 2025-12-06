@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11222.16 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWHapi", "TWHapi\TWHapi.csproj", "{9E89482E-A8AF-4687-9D40-E13CD4395861}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{3135534C-A29E-41AA-AA25-213355252011}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{39899B31-CD47-437A-AA3A-D20A25DE69DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{0E4872EE-5B52-4AF9-B72F-E7C186C543BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +41,15 @@ Global
 		{39899B31-CD47-437A-AA3A-D20A25DE69DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39899B31-CD47-437A-AA3A-D20A25DE69DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39899B31-CD47-437A-AA3A-D20A25DE69DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E4872EE-5B52-4AF9-B72F-E7C186C543BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E4872EE-5B52-4AF9-B72F-E7C186C543BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E4872EE-5B52-4AF9-B72F-E7C186C543BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E4872EE-5B52-4AF9-B72F-E7C186C543BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76219944-266E-40E2-AED9-B45F31EB7023}
 	EndGlobalSection
 EndGlobal
