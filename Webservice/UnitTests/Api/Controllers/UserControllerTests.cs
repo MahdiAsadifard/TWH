@@ -35,6 +35,7 @@ namespace UnitTests.Api.Controllers
                 _mockMapper.Object,
                 _mockJWTHelper.Object);
 
+            // instance of UserRecord
             _userRecord = new UserRecord
             {
                 Disabled = false,
@@ -45,7 +46,39 @@ namespace UnitTests.Api.Controllers
                 HashPassword = new byte[] { 1, 2, 3 },
                 Salt = "random"
             };
+
+            // Map UserRecord to UserResponseDTO
+            this.SetUserRecordAutoMapper();
         }
+
+        #region Private members
+        private void SetUserRecordAutoMapper()
+        {
+            _mockMapper.Setup(x => x.Map<IEnumerable<UserResponseDTO>>(It.IsAny<IEnumerable<UserRecord>>()))
+                .Returns(new List<UserResponseDTO>
+                {
+                    new UserResponseDTO
+                    {
+                        FirstName = _userRecord.FirstName,
+                        LastName = _userRecord.LastName,
+                        Email = _userRecord.Email,
+                        Phone = _userRecord.Phone,
+                        Disabled = _userRecord.Disabled
+
+                    }
+                });
+            _mockMapper.Setup(x => x.Map<UserResponseDTO>(It.IsAny<UserRecord>()))
+             .Returns(new UserResponseDTO
+             {
+                 FirstName = _userRecord.FirstName,
+                 LastName = _userRecord.LastName,
+                 Email = _userRecord.Email,
+                 Phone = _userRecord.Phone,
+                 Disabled = _userRecord.Disabled
+
+             });
+        }
+        #endregion
 
         [Fact]
         public async Task GetUsersAsync_assert_unsuccessfull_response_notExpect_Exception()
@@ -64,6 +97,7 @@ namespace UnitTests.Api.Controllers
 
             // Assert
             Assert.NotNull(actual);
+            Assert.Null(actual.Data);
             Assert.False(actual.IsSuccess);
             Assert.Equal(HttpStatusCode.Unauthorized, actual.StatusCode);
             Assert.Equal(errorMessage, actual.Message);
@@ -72,10 +106,10 @@ namespace UnitTests.Api.Controllers
         }
 
         [Fact]
-        public async void GetUsersAsync_assert_successfull_response_notExcpect_exception()
+        public async Task GetUsersAsync_assert_successfull_response_notExcpect_exception()
         {
             // Arrange
-            var usersResponse = new List<UserRecord> { _userRecord };
+            var usersResponse = new List<UserRecord> { _userRecord, _userRecord };
             var mockResponse = new ServiceResponse<IEnumerable<UserRecord>>(usersResponse, HttpStatusCode.OK);
 
             _mockUserOperations
@@ -87,11 +121,35 @@ namespace UnitTests.Api.Controllers
             var exception = await Record.ExceptionAsync(() => _userController.GetUsersAsync());
 
             // Assert
-            Assert.NotNull(actual);
+            Assert.NotNull(actual.Data);
             Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+            Assert.True(actual.IsSuccess);
             Assert.IsType<ServiceResponse<IEnumerable<UserResponseDTO>>>(actual);
-            // TODO: Fix mapping test
-            //Assert.Equal(_userRecord.FirstName, actual.Data?.First()?.FirstName ?? string.Empty);
+            Assert.Equal(_userRecord.FirstName, actual.Data?.First()?.FirstName ?? string.Empty);
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public async Task GetUsersByUriAsync_assert_successfull_response_notExcpect_exception()
+        {
+            // Arrange
+            const string uri = "xyz";
+            var mockResponse = new ServiceResponse<UserRecord>(_userRecord, HttpStatusCode.OK);
+
+            _mockUserOperations
+                .Setup(x => x.GetUserByUriAsync(uri))
+                .ReturnsAsync(mockResponse);
+
+            // Act
+            var actual = await _userController.GetUsersByUriAsync(uri);
+            var exception = await Record.ExceptionAsync(() => _userController.GetUsersByUriAsync(uri));
+
+            // Assert
+            Assert.NotNull(actual.Data);
+            Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+            Assert.True(actual.IsSuccess);
+            Assert.IsType<ServiceResponse<UserResponseDTO>>(actual);
+            Assert.Equal(_userRecord.FirstName, actual.Data?.FirstName ?? string.Empty);
             Assert.Null(exception);
         }
     }
