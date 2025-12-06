@@ -10,9 +10,9 @@
                     builder =>
                     {
                         builder
-                        .WithOrigins(configuration.GetSection("CORS:AllowedOrigins").Get<string[]>())
-                        .WithHeaders(configuration.GetSection("CORS:AllowedHeaders").Get<string[]>())
-                        .WithMethods(configuration.GetSection("CORS:AllowedMethods").Get<string[]>());
+                        .WithOrigins(configuration.GetSection("CORS:AllowedOrigins").Get<string[]>() ?? [])
+                        .WithHeaders(configuration.GetSection("CORS:AllowedHeaders").Get<string[]>() ?? [])
+                        .WithMethods(configuration.GetSection("CORS:AllowedMethods").Get<string[]>() ?? []);
                     });
             });
             return services;
