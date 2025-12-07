@@ -1,6 +1,4 @@
-﻿using TWHapi.ProgramHelpers.Middlewares;
-
-namespace TWHapi.ProgramHelpers.Extensions
+﻿namespace TWHapi.ProgramHelpers.Extensions
 {
     public static class AppConfigTailBuilderExtensions
     {

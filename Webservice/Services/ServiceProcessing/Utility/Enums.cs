@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Services.ServiceProcessing
+﻿namespace Services.ServiceProcessing
 {
     /// <summary>
     /// Specifies the processing operation names used by service components.

@@ -1,14 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Exceptions;
 using Database.Model;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
 using System.Security.Cryptography.X509Certificates;
-using Core.Exceptions;
 
 namespace Database
 {
@@ -18,7 +13,7 @@ namespace Database
         private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase _mongodatabase;
 
-        public SslSettings sslSettings 
+        public SslSettings sslSettings
         {
             get
             {
@@ -30,7 +25,7 @@ namespace Database
             }
         }
 
-        private MongoClientSettings mongoClientSettings 
+        private MongoClientSettings mongoClientSettings
         {
             get
             {

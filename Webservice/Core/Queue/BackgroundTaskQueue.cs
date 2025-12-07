@@ -24,7 +24,7 @@ namespace Core.Queue
 
         public async ValueTask<ValueTask> EnqueueAsync(Func<CancellationToken, Task> workItem, string processName)
         {
-                using var spw = new StopWatchHelper();
+            using var spw = new StopWatchHelper();
             try
             {
 

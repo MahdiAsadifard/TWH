@@ -1,9 +1,6 @@
 ﻿using Core.Response;
 using Models.DTOs.Login;
 using Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Services.Authentication
 {

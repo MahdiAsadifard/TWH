@@ -8,7 +8,7 @@ namespace TWHapi.ProgramHelpers.Extensions
         {
             app.UseMiddleware<JWTMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-         
+
             return app;
         }
     }

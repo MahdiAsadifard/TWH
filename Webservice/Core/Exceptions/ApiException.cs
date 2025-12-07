@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace Core.Exceptions
 {
@@ -12,7 +7,7 @@ namespace Core.Exceptions
         public ApiExceptionCode ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
         public HttpStatusCode StatusCode { get; set; }
-        
+
         /// <summary>
         /// Initialize a new instance of the <see cref="ApiException"/>
         /// </summary>
@@ -25,7 +20,7 @@ namespace Core.Exceptions
             string errorMessage,
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError,
             Exception innerException = null
-            ):base($": {errorMessage}, StatusCode: {statusCode}", innerException)
+            ) : base($": {errorMessage}, StatusCode: {statusCode}", innerException)
         {
             this.ErrorCode = errorCode;
             this.ErrorMessage = errorMessage;

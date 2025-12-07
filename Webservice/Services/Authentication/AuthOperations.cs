@@ -1,23 +1,17 @@
-﻿using Core.Exceptions;
+﻿using AutoMapper;
+using Core.Common;
+using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
+using Microsoft.Extensions.Configuration;
+using Models.DTOs.JWT;
+using Models.DTOs.Login;
+using Models.DTOs.User;
 using Models.Models;
 using MongoDB.Driver;
 using Services.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
-using Core.Common;
-using Models.DTOs.Login;
-using Microsoft.Extensions.Configuration;
-using Models.DTOs.JWT;
-using AutoMapper;
-using Models.DTOs.User;
+using System.Net;
 
 namespace Services.Authentication
 {
@@ -85,7 +79,7 @@ namespace Services.Authentication
             var token = _jWTHelper.GenerateJWTToken(userRecord);
 
             var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
-            
+
             var reponse = new LoginRsponseDTO
             {
                 Token = new JwtCarrierDTO

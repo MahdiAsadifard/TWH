@@ -1,6 +1,4 @@
 ﻿using NLog;
-using Core.Exceptions;
-using System.ComponentModel.DataAnnotations;
 
 namespace Core.NLogs
 {

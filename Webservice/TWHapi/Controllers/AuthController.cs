@@ -4,8 +4,6 @@ using Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.Login;
-using Models.DTOs.User;
-using Models.Models;
 using Services.Authentication;
 using Services.Interfaces;
 

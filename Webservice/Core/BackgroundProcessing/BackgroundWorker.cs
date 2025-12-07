@@ -3,7 +3,6 @@ using Core.Queue;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 
 namespace Core.BackgroundProcessing
 {
@@ -95,8 +94,8 @@ namespace Core.BackgroundProcessing
             Func<CancellationToken, Task> workItem = null;
             try
             {
-                 using var spw = new StopWatchHelper();
-                
+                using var spw = new StopWatchHelper();
+
                 _logger.LogInformation("---> BackgroundWorker/GetTask: Start picking task. time: [{time}]ms", spw.ElapsedMilliseconds);
 
                 workItem = await _queue.DequeuAsync(this._cancellationToken);
@@ -122,9 +121,9 @@ namespace Core.BackgroundProcessing
             {
                 if (workItem is not null)
                 {
-                     using var spw = new StopWatchHelper();
+                    using var spw = new StopWatchHelper();
                     _logger.LogInformation("---> BackgroundWorker/GetTask: Worker Started running task, time: [{time}]ms", spw.ElapsedMilliseconds);
-                    
+
                     await workItem(this._cancellationToken);
 
                     _logger.LogInformation("---> BackgroundWorker/RunTask: Worker Finished running task. time:[{time}]ms", spw.ElapsedMilliseconds);

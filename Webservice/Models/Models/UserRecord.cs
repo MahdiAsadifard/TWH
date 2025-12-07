@@ -1,14 +1,9 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Common;
-using Models.Framework;
+﻿using Core.Common;
 using Models.Common;
+using Models.Framework;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.Models
 {
@@ -41,7 +36,7 @@ namespace Models.Models
 
         private string _email;
         [BsonRequired]
-        public required string Email 
+        public required string Email
         {
             get
             {

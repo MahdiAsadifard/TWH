@@ -1,13 +1,13 @@
-﻿using Moq;
-using Services.Interfaces;
-using TWHapi.Controllers;
-using AutoMapper;
-using Services.Authentication;
-using Core.Response;
-using Models.Models;
-using System.Net;
-using Models.DTOs.User;
+﻿using AutoMapper;
 using Core.Exceptions;
+using Core.Response;
+using Models.DTOs.User;
+using Models.Models;
+using Moq;
+using Services.Authentication;
+using Services.Interfaces;
+using System.Net;
+using TWHapi.Controllers;
 
 namespace UnitTests.Api.Controllers
 {
@@ -274,7 +274,7 @@ namespace UnitTests.Api.Controllers
                 .ThrowsAsync(new Exception("Insertion failed"));
 
             // Act
-            var exception = await Assert.ThrowsAsync<Exception>(() =>  _userController.InsertOneAsync(_userRequestDTO));
+            var exception = await Assert.ThrowsAsync<Exception>(() => _userController.InsertOneAsync(_userRequestDTO));
 
             // Assert
             Assert.Contains("Insertion failed", exception.Message);
@@ -286,7 +286,7 @@ namespace UnitTests.Api.Controllers
             // Arrange
             const string errorMessage = "User already exists";
             var mockResponse = new ServiceResponse<UserRecord>(errorMessage, HttpStatusCode.Conflict);
-            
+
             _mockUserOperations
                 .Setup(x => x.InsertOneAsync(_userRequestDTO))
                 .ReturnsAsync(mockResponse);

@@ -1,5 +1,4 @@
 ﻿using Core.Queue;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace TWHapi.ProgramHelpers.Extensions
 {
@@ -15,7 +14,7 @@ namespace TWHapi.ProgramHelpers.Extensions
             //});
 
             services.Configure<BackgroundTaskQueueOptions>(configuration.GetSection(BackgroundTaskQueueOptions.OptionName));
-            
+
             return services;
         }
     }

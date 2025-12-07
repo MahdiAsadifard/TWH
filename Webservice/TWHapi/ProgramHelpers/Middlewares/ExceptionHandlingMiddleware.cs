@@ -1,11 +1,11 @@
 ﻿namespace TWHapi.ProgramHelpers.Middlewares
 {
-    using Microsoft.AspNetCore.Http;
     using Core.Exceptions;
-    using System.Net;
-    using Microsoft.AspNetCore.Diagnostics;
-    using Newtonsoft.Json;
     using Core.NLogs;
+    using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json;
+    using System.Net;
 
     public class ExceptionHandlingMiddleware
     {

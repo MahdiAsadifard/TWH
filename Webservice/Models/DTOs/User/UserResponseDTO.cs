@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Models.DTOs.User
+﻿namespace Models.DTOs.User
 {
     public class UserResponseDTO
     {

@@ -1,12 +1,6 @@
-﻿using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Models.Models;
+﻿using Core.Response;
 using Models.DTOs.User;
-using Core.Response;
+using Models.Models;
 using MongoDB.Driver;
 
 namespace Services.Interfaces

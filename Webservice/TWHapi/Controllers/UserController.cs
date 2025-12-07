@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Web;
-using Services.Interfaces;
-using AutoMapper;
-using Models.DTOs.User;
+﻿using AutoMapper;
+using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
-using Core.Exceptions;
-using Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Models.DTOs.User;
+using Services.Authentication;
+using Services.Interfaces;
 
 namespace TWHapi.Controllers
 {
@@ -48,10 +47,10 @@ namespace TWHapi.Controllers
             {
                 var response = await _user.GetUserByUriAsync(uri);
 
-               if (!response.IsSuccess) return new ServiceResponse<UserResponseDTO>(response.Message, response.StatusCode);
+                if (!response.IsSuccess) return new ServiceResponse<UserResponseDTO>(response.Message, response.StatusCode);
 
                 var dto = _mapper.Map<UserResponseDTO>(response.Data);
-               return new ServiceResponse<UserResponseDTO>(dto);
+                return new ServiceResponse<UserResponseDTO>(dto);
             }
             catch (ApiException e)
             {
@@ -63,9 +62,9 @@ namespace TWHapi.Controllers
             }
         }
 
-    
+
         [HttpPost("")]
-        public async Task<ServiceResponse<UserResponseDTO>> InsertOneAsync([FromBody]UserRequestDTO submission)
+        public async Task<ServiceResponse<UserResponseDTO>> InsertOneAsync([FromBody] UserRequestDTO submission)
         {
             try
             {
