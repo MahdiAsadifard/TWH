@@ -12,6 +12,7 @@ using Core.Response;
 using Models.Models;
 using System.Net;
 using Models.DTOs.User;
+using Core.Exceptions;
 
 namespace UnitTests.Api.Controllers
 {
@@ -129,6 +130,33 @@ namespace UnitTests.Api.Controllers
             Assert.Null(exception);
         }
 
+        #region GetUsersByUriAsync Tests
+        [Fact]
+        public async Task GetUsersByUriAsync_assert_unsuccessfull_response_notExpect_Exception()
+        {
+            // Arrange
+            const string uri = "xyz";
+            const string errorMessage = "Error retrieving users";
+            var mockResponse = new ServiceResponse<UserRecord>(errorMessage, HttpStatusCode.InternalServerError);
+
+            _mockUserOperations
+                .Setup(x => x.GetUserByUriAsync(uri))
+                .ReturnsAsync(mockResponse);
+
+            // Act
+            var actual = await _userController.GetUsersByUriAsync(uri);
+            var exception = await Record.ExceptionAsync(() => _userController.GetUsersByUriAsync(uri));
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.Null(actual.Data);
+            Assert.False(actual.IsSuccess);
+            Assert.Equal(HttpStatusCode.InternalServerError, actual.StatusCode);
+            Assert.Equal(errorMessage, actual.Message);
+            // Assert Exception is null
+            Assert.Null(exception);
+        }
+
         [Fact]
         public async Task GetUsersByUriAsync_assert_successfull_response_notExcpect_exception()
         {
@@ -152,5 +180,37 @@ namespace UnitTests.Api.Controllers
             Assert.Equal(_userRecord.FirstName, actual.Data?.FirstName ?? string.Empty);
             Assert.Null(exception);
         }
+
+        [Theory]
+        [InlineData(typeof(ApiException))]
+        [InlineData(typeof(Exception))]
+        public async Task GetUsersByUriAsync_assert_unsuccessfull_apiException(Type exception)
+        {
+            // Arrange
+            const string uri = "xyz";
+            const string errorMessage = "Error retrieving users";
+            var mockResponse = new ServiceResponse<UserRecord>(errorMessage, HttpStatusCode.InternalServerError);
+
+            Exception toThrow = exception switch
+            {
+                Type t when t == typeof(ApiException) => new ApiException(ApiExceptionCode.InternalServerError, errorMessage, HttpStatusCode.InternalServerError),
+                
+                Type t when t == typeof(Exception) => new Exception(errorMessage),
+                
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+          
+            _mockUserOperations
+                .Setup(x => x.GetUserByUriAsync(uri))
+                .Throws(toThrow);
+
+
+            // Act
+            var _exception = await Assert.ThrowsAsync(exception, () => _userController.GetUsersByUriAsync(uri));
+
+            // Assert
+            Assert.Contains(errorMessage, _exception.Message);
+        }
+        #endregion
     }
 }
