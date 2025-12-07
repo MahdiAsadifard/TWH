@@ -8,6 +8,7 @@ using Models.DTOs.JWT;
 using Models.DTOs.Login;
 using Models.DTOs.User;
 using Models.Models;
+using Models.Options;
 using MongoDB.Driver;
 using Services.Collections;
 using Services.Interfaces;
@@ -85,7 +86,7 @@ namespace Services.Authentication
                 Token = new JwtCarrierDTO
                 {
                     AccessToken = token,
-                    expiry = _configuration.GetSection("JWT:expiry").Get<string>(),
+                    expiry = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.expiry)}").Get<string>() ?? string.Empty,
                 },
                 User = uderDto
             };
