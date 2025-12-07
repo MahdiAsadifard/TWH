@@ -1,5 +1,5 @@
 ﻿using Core.Exceptions;
-using Database.Model;
+using Models.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
@@ -9,7 +9,7 @@ namespace Database
 {
     public class Database<T> : IDatabase<T>
     {
-        private readonly IOptions<DatabaseSettings> _database;
+        private readonly IOptions<DatabseOptions> _database;
         private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase _mongodatabase;
 
@@ -37,7 +37,7 @@ namespace Database
                 };
             }
         }
-        public Database(IOptions<DatabaseSettings> database)
+        public Database(IOptions<DatabseOptions> database)
         {
             _database = database;
 

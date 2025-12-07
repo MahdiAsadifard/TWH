@@ -1,4 +1,5 @@
 ﻿using Core.Queue;
+using Models.Options;
 
 namespace TWHapi.ProgramHelpers.Extensions
 {
@@ -14,6 +15,9 @@ namespace TWHapi.ProgramHelpers.Extensions
             //});
 
             services.Configure<BackgroundTaskQueueOptions>(configuration.GetSection(BackgroundTaskQueueOptions.OptionName));
+
+            services.Configure<ServiceInfoOptions>(configuration.GetSection(ServiceInfoOptions.OptionName));
+            services.Configure<DatabseOptions>(configuration.GetSection(DatabseOptions.OptionName));
 
             return services;
         }

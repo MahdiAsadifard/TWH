@@ -1,6 +1,6 @@
 ﻿using Core.Queue;
-using Database.Model;
 using Models.Common;
+using Models.Options;
 using Services.Authentication;
 using Services.Collections;
 using Services.Interfaces;
@@ -24,7 +24,7 @@ namespace TWHapi.ProgramHelpers.Extensions
                 });
             });
 
-            services.Configure<DatabaseSettings>(configuration.GetSection("ServerInfo"));
+            services.Configure<DatabseOptions>(configuration.GetSection("ServerInfo"));
 
             services.InitializeJWT(configuration);
             // JWT

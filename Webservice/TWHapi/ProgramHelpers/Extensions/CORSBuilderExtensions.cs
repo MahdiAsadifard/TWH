@@ -1,4 +1,6 @@
-﻿namespace TWHapi.ProgramHelpers.Extensions
+﻿using Models.Options;
+
+namespace TWHapi.ProgramHelpers.Extensions
 {
     public static class CORSBuilderExtensions
     {
@@ -10,9 +12,9 @@
                     builder =>
                     {
                         builder
-                        .WithOrigins(configuration.GetSection("CORS:AllowedOrigins").Get<string[]>() ?? [])
-                        .WithHeaders(configuration.GetSection("CORS:AllowedHeaders").Get<string[]>() ?? [])
-                        .WithMethods(configuration.GetSection("CORS:AllowedMethods").Get<string[]>() ?? []);
+                        .WithOrigins(configuration.GetSection($"{CorsOptions.OptionName}:{nameof(CorsOptions.AllowedOrigins)}").Get<string[]>() ?? [])
+                        .WithHeaders(configuration.GetSection($"{CorsOptions.OptionName}:{nameof(CorsOptions.AllowedHeaders)}").Get<string[]>() ?? [])
+                        .WithMethods(configuration.GetSection($"{CorsOptions.OptionName}:{nameof(CorsOptions.AllowedMethods)}").Get<string[]>() ?? []);
                     });
             });
             return services;

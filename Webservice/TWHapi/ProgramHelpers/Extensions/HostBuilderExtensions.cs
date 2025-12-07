@@ -1,13 +1,16 @@
-﻿namespace TWHapi.ProgramHelpers.Extensions
+﻿using Models.Options;
+
+namespace TWHapi.ProgramHelpers.Extensions
 {
     public static class HostBuilderExtensions
     {
-        public static WebApplication CreateHostBuilder(this WebApplication app, IWebHostEnvironment env, IConfiguration configuration)
+        public static WebApplication CreateHostBuilder(
+            this WebApplication app,
+            IWebHostEnvironment env,
+            IConfiguration configuration)
         {
             bool IsDevelopment = env.IsDevelopment();
-            var port = IsDevelopment ?
-                configuration.GetSection("ServerInfo:DevelopmentPort").Get<string>()
-                : configuration.GetSection("ServerInfo:ProductionPort").Get<string>();
+            var port = configuration.GetSection($"{ServiceInfoOptions.OptionName}:{nameof(ServiceInfoOptions.Port)}").Get<string>();
 
             Console.WriteLine($"Development: {IsDevelopment}, PORT: {port}");
 
