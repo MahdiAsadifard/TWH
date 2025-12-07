@@ -44,6 +44,11 @@ namespace Core.Queue
                 }
                 return ValueTask.CompletedTask;
             }
+            catch (OperationCanceledException ex)
+            {
+                _logger.LogError(ex, "BackgroundTaskQueue/EnqueueAsync: OperationCanceledException Error occurred while enqueuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "BackgroundTaskQueue/EnqueueAsync: Error occurred while enqueuing work item. ProcessName: {ProcessName}, time: [{time}]ms", processName, spw.ElapsedMilliseconds);
@@ -62,7 +67,7 @@ namespace Core.Queue
             }
             catch (OperationCanceledException ex)
             {
-                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: OperationCanceledException Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
                 throw;
             }
             catch (Exception ex)
