@@ -62,8 +62,8 @@ namespace TWHapi.Controllers
             }
         }
 
-
-        [HttpPost("")]
+        [Authorize]
+        [HttpPost("register")]
         public async Task<ServiceResponse<UserResponseDTO>> InsertOneAsync([FromBody] UserRequestDTO submission)
         {
             try

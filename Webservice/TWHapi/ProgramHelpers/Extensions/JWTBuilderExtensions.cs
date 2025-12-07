@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Models.Options;
 
 namespace TWHapi.ProgramHelpers.Extensions
 {
@@ -22,9 +23,7 @@ namespace TWHapi.ProgramHelpers.Extensions
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8
-                            .GetBytes(configuration["JWT:Key"])
-                            ),
+                            Encoding.UTF8.GetBytes(configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Key)}").Get<string>() ?? string.Empty)),
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ClockSkew = TimeSpan.Zero,
