@@ -45,8 +45,8 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             // Database
             services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
-            services.AddScoped<IUserOperations, UserOperations>();
             services.AddScoped<IAuthOperations, AuthOperations>();
+            services.AddScoped<IUserOperations, UserOperations>();
 
             return services;
         }
