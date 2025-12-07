@@ -79,7 +79,7 @@ namespace TWHapi.Controllers
             }
             catch (Exception ex)
             {
-                var msg = $"UserController/InsertOneAsync: Error on adding new user: {ex.Message} - \n trace:\n {ex}";
+                var msg = $"UserController/InsertOneAsync: Error on adding new user: {ex.Message} - \n trace:\n {ex.StackTrace}";
                 NLogHelpers<UserController>.Logger.Info(msg);
                 throw new Exception("Error: " + ex.Message);
             }
