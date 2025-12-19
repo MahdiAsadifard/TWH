@@ -29,8 +29,6 @@ namespace TWHapi.Controllers
         [HttpGet]
         public async Task<ServiceResponse<IEnumerable<UserResponseDTO>>> GetUsersAsync()
         {
-            _logger.Log(Core.ILogs.LogLevel.Warning, " erroe>>>> UserController/GetUsersAsync: Getting all users one: {one}", "1");
-            _logger.Log(Core.ILogs.LogLevel.Debug, " warn 2>>>> UserController/GetUsersAsync: Getting all users one: {one}", "1");
             var response = await _user.GetUsersAsync();
 
             if (!response.IsSuccess) return new ServiceResponse<IEnumerable<UserResponseDTO>>(response.Message, response.StatusCode);
