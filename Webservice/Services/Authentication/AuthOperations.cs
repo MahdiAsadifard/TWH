@@ -16,30 +16,27 @@ using System.Net;
 
 namespace Services.Authentication
 {
-    public class AuthOperations : IAuthOperations
-    {
-        private readonly IConfiguration _configuration;
-        private readonly IUserOperations _userOperations;
-        private readonly IJWTHelper _jWTHelper;
-        private readonly IMapper _mapper;
-
-        public AuthOperations(
+    public class AuthOperations(
             IConfiguration configuration,
             IUserOperations userOperations,
             IJWTHelper jwtHelper,
-            IMapper mapper)
-        {
-            this._userOperations = userOperations;
-            this._jWTHelper = jwtHelper;
-            this._configuration = configuration;
-            this._mapper = mapper;
-        }
+            IMapper mapper
+        ) : IAuthOperations
+    {
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IUserOperations _userOperations = userOperations;
+        private readonly IJWTHelper _jWTHelper = jwtHelper;
+        private readonly IMapper _mapper = mapper;
+
         public async Task<ServiceResponse<UserRecord>> GetUsersByEmailAsync(string email)
         {
+            _mapper.Map<string>(email);
             try
             {
-                var filters = new List<FilterDefinition<UserRecord>>();
-                filters.Add(Builders<UserRecord>.Filter.Eq(x => x.Email, email.ToLower()));
+                var filters = new List<FilterDefinition<UserRecord>>()
+                {
+                    Builders<UserRecord>.Filter.Eq(x => x.Email, email.ToLower())
+                };
 
                 var users = await _userOperations.GetUsersAsync(filters);
 
