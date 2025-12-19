@@ -1,4 +1,5 @@
 ﻿using Core.Queue;
+using Microsoft.OpenApi;
 using Models.Common;
 using Models.Options;
 using Services.Authentication;
@@ -16,11 +17,11 @@ namespace TWHapi.ProgramHelpers.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    In = ParameterLocation.Header,
                     Name = "Authorization",
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.ApiKey
                 });
             });
 
@@ -41,7 +42,7 @@ namespace TWHapi.ProgramHelpers.Extensions
             services.AddSingleton<IServiceProcessing, ServiceProcessing>();
 
             // Mapper: All DTOs listed in Models assebly
-            services.AddAutoMapper(Utility.GetModelsAssemblies());
+            services.AddAutoMapper(cfg => { }, Utility.GetModelsAssemblies());
 
             // Database
             services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
