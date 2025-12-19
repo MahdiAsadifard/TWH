@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text;
+using Core.NLogs;
 
 namespace TWHapi.ProgramHelpers.Middlewares
 {
@@ -47,7 +48,16 @@ namespace TWHapi.ProgramHelpers.Middlewares
             catch (Exception e)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await context.Response.WriteAsync($"Token validation failed. Invalid token provided. \nTrace: {e.Message}");
+                
+                var result = new
+                {
+                    message = "Unauthorized token",
+                    status = context.Response.StatusCode,
+                };
+                await context.Response.WriteAsJsonAsync(result);
+
+                NLogHelpers<JWTMiddleware>.Logger.Error( "Token validation failed. Invalid token provided. \nMessage: {Message}, \nTrace: {Trace}", e.Message, e.StackTrace);
+
                 return;
             }
             await _nextDelegate(context);
