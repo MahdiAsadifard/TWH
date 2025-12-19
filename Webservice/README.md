@@ -1,6 +1,7 @@
+[<-- Return to Reamde.md](../README.md)
 
 ## Running server-side locally
 Navigate to Docs and follow the steps
 
-- MongoDbLocally
-- GenerateCertificate
+- [MongoDbLocally](./Docs/MongoDbLocally.md)
+- [GenerateCertificate](./Docs/GenerateCertificate.md)
