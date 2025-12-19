@@ -11,17 +11,15 @@ using Services.Interfaces;
 namespace TWHapi.Controllers
 {
     [Route("api/user")]
-    public class UserController : BaseController
+    public class UserController(
+            IUserOperations user,
+            IMapper mapper,
+            IJWTHelper jwhHelper
+        ) : BaseController
     {
-        private readonly IJWTHelper _jwtHelper;
-        private readonly IUserOperations _user;
-        private readonly IMapper _mapper;
-        public UserController(IUserOperations user, IMapper mapper, IJWTHelper jwhHelper)
-        {
-            _user = user;
-            _mapper = mapper;
-            this._jwtHelper = jwhHelper;
-        }
+        private readonly IJWTHelper _jwtHelper = jwhHelper;
+        private readonly IUserOperations _user = user;
+        private readonly IMapper _mapper = mapper;
 
         [Authorize]
         [Route("")]
