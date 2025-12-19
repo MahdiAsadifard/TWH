@@ -6,21 +6,15 @@ using Services.ServiceProcessing;
 namespace TWHapi.Controllers
 {
     [Route("api/health")]
-    public class HealthController : Controller
-    {
-        private readonly ILogger<HealthController> _logger;
-        private readonly IBackgroundTaskQueue _queue;
-        private readonly IServiceProcessing _serviceProcessing;
-
-        public HealthController(
+    public class HealthController(
             ILogger<HealthController> logger,
             IBackgroundTaskQueue queue,
-            IServiceProcessing serviceProcessing)
-        {
-            this._logger = logger;
-            this._queue = queue;
-            this._serviceProcessing = serviceProcessing;
-        }
+            IServiceProcessing serviceProcessing
+        ) : Controller
+    {
+        private readonly ILogger<HealthController> _logger = logger;
+        private readonly IBackgroundTaskQueue _queue = queue;
+        private readonly IServiceProcessing _serviceProcessing = serviceProcessing;
 
         [AllowAnonymous]
         [HttpGet]
