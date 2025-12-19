@@ -4,7 +4,7 @@ namespace Core.Common
 {
     public class StopWatchHelper : IDisposable
     {
-        Stopwatch _stopwatch = null;
+        Stopwatch? _stopwatch = null;
         public StopWatchHelper()
         {
             _stopwatch = new Stopwatch();
@@ -17,11 +17,11 @@ namespace Core.Common
             _stopwatch = null;
         }
 
-        public void Start() => _stopwatch.Start();
+        public void Start() => _stopwatch?.Start();
 
-        public void Stop() => _stopwatch.Stop();
+        public void Stop() => _stopwatch?.Stop();
 
-        public long ElapsedMilliseconds => _stopwatch.ElapsedMilliseconds;
+        public long ElapsedMilliseconds => _stopwatch?.ElapsedMilliseconds ?? default;
 
     }
 }

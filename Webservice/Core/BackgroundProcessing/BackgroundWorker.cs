@@ -32,16 +32,17 @@ namespace Core.BackgroundProcessing
         private async Task<Func<CancellationToken, Task>> GetTask()
         {
             _logger.LogInformation("BackgroundWorker/DoWork: Background Worker is listening...");
-            Func<CancellationToken, Task> workItem = null;
             try
             {
                 using var spw = new StopWatchHelper();
 
                 _logger.LogInformation("---> BackgroundWorker/GetTask: Start picking task. time: [{time}]ms", spw.ElapsedMilliseconds);
 
-                workItem = await _queue.DequeuAsync(this._cancellationToken);
+                Func<CancellationToken, Task>? workItem = await _queue.DequeuAsync(this._cancellationToken);
 
                 _logger.LogInformation("---> BackgroundWorker/GetTask: End picking task. time: [{time}]ms", spw.ElapsedMilliseconds);
+
+                return workItem;
             }
             catch (OperationCanceledException ex)
             {
@@ -53,7 +54,6 @@ namespace Core.BackgroundProcessing
                 _logger.LogError(ex, "BackgroundWorker/GetTask: Error occurred dequeue in backgroundworker, ErrorMessage: {Message}", ex.Message);
                 throw;
             }
-            return workItem;
         }
 
         private async Task RunTask(Func<CancellationToken, Task> workItem)
