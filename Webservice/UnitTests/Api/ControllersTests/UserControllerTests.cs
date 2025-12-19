@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.Exceptions;
+using Core.ILogs;
 using Core.Response;
 using Models.DTOs.User;
 using Models.Models;
@@ -9,7 +10,7 @@ using Services.Interfaces;
 using System.Net;
 using TWHapi.Controllers;
 
-namespace UnitTests.Api.Controllers
+namespace UnitTests.Api.ControllersTests
 {
     public class UserControllerTests
     {
@@ -17,6 +18,7 @@ namespace UnitTests.Api.Controllers
         private readonly Mock<IUserOperations> _mockUserOperations;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<IJWTHelper> _mockJWTHelper;
+        private readonly Mock<ILoggerHelpers<UserController>> _mockLogger;
 
         private UserRecord _userRecord;
         private UserRequestDTO _userRequestDTO;
@@ -26,11 +28,13 @@ namespace UnitTests.Api.Controllers
             this._mockUserOperations = new Mock<IUserOperations>();
             this._mockMapper = new Mock<IMapper>();
             this._mockJWTHelper = new Mock<IJWTHelper>();
+            _mockLogger = new Mock<ILoggerHelpers<UserController>>();
 
             _userController = new UserController(
                 _mockUserOperations.Object,
                 _mockMapper.Object,
-                _mockJWTHelper.Object);
+                _mockJWTHelper.Object,
+                _mockLogger.Object);
 
             // instance of UserRecord
             _userRecord = new UserRecord

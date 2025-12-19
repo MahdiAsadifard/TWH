@@ -9,14 +9,10 @@ using System.Text;
 
 namespace Services.Authentication
 {
-    public class JWTHelper : IJWTHelper
+    public class JWTHelper(IConfiguration configuration) : IJWTHelper
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration = configuration;
 
-        public JWTHelper(IConfiguration configuration)
-        {
-            this._configuration = configuration;
-        }
         public string GenerateJWTToken(UserRecord user)
         {
             ArgumentsValidator.ThrowIfNull(nameof(user), user);

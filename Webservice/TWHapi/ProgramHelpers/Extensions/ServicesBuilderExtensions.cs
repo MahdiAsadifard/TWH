@@ -1,4 +1,5 @@
-﻿using Core.Queue;
+﻿using Core.ILogs;
+using Core.Queue;
 using Microsoft.OpenApi;
 using Models.Common;
 using Models.Options;
@@ -28,6 +29,10 @@ namespace TWHapi.ProgramHelpers.Extensions
             services.Configure<DatabseOptions>(configuration.GetSection("ServerInfo"));
 
             services.InitializeJWT(configuration);
+
+            // Logger
+            services.AddSingleton(typeof(ILoggerHelpers<>), typeof(LoggerHelpers<>));
+
             // JWT
             services.AddScoped<IJWTHelper, JWTHelper>();
 

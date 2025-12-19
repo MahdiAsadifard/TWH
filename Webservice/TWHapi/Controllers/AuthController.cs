@@ -10,24 +10,17 @@ using Services.Interfaces;
 namespace TWHapi.Controllers
 {
     [Route("api/auth")]
-    public class AuthController : BaseController
-    {
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
-        private readonly IUserOperations _userOperations;
-        private readonly IAuthOperations _authOperations;
-
-        public AuthController(
+    public class AuthController(
             IConfiguration configuration,
             IMapper mapper,
             IUserOperations userOperations,
-            IAuthOperations authOperations)
-        {
-            this._configuration = configuration;
-            this._mapper = mapper;
-            this._userOperations = userOperations;
-            this._authOperations = authOperations;
-        }
+            IAuthOperations authOperations
+        ) : BaseController
+    {
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IMapper _mapper = mapper;
+        private readonly IUserOperations _userOperations = userOperations;
+        private readonly IAuthOperations _authOperations = authOperations;
 
         [AllowAnonymous]
         [HttpPost]

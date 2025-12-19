@@ -1,19 +1,19 @@
 ﻿using Core.Common;
 using Core.Exceptions;
+using Core.ILogs;
 using Core.Queue;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Services.ServiceProcessing
 {
     public class ServiceProcessing : IServiceProcessing
     {
-        private readonly ILogger<ServiceProcessing> _logger;
+        private readonly ILoggerHelpers<ServiceProcessing> _logger;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IOptions<BackgroundTaskQueueOptions> _backgroundTaskQueueOptions;
 
         public ServiceProcessing(
-            ILogger<ServiceProcessing> logger,
+            ILoggerHelpers<ServiceProcessing> logger,
             IBackgroundTaskQueue backgroundTaskQueue,
             IOptions<BackgroundTaskQueueOptions> backgroundTaskQueueOptions)
         {
@@ -25,7 +25,7 @@ namespace Services.ServiceProcessing
             Func<CancellationToken, Task> workItem,
             ServiceProcessingName processName)
         {
-            _logger.LogInformation("ServiceProcessing/StartProcessing: Starting service processing... ProcessName: {Name} ", processName);
+            _logger.Log(Core.ILogs.LogLevel.Information, "ServiceProcessing/StartProcessing: Starting service processing... ProcessName: {Name} ", processName);
 
             ArgumentsValidator.ThrowIfNull(nameof(workItem), workItem);
 
@@ -39,7 +39,7 @@ namespace Services.ServiceProcessing
             {
                 try
                 {
-                    _logger.LogError(ex, "ServiceProcessing/StartProcessing: Error occurred executing {Name}. Retrying in {Delay}s, ErrorMessage: {Message}",
+                    _logger.Log(ex, "ServiceProcessing/StartProcessing: Error occurred executing {Name}. Retrying in {Delay}s, ErrorMessage: {Message}",
                         processName,
                         _backgroundTaskQueueOptions.Value.RetryQueueDelaySeconds,
                         ex.Message);
@@ -50,7 +50,7 @@ namespace Services.ServiceProcessing
                 }
                 catch (Exception)
                 {
-                    _logger.LogCritical(ex, "ServiceProcessing/StartProcessing: Error occurred executing {Name} on retry. Exiting process...", processName);
+                    _logger.Log(ex, "ServiceProcessing/StartProcessing: CRTITICAL - Error occurred executing {Name} on retry. Exiting process...", processName);
                     throw;
                 }
             }

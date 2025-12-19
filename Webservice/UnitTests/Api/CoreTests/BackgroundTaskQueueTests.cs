@@ -1,18 +1,19 @@
-﻿using Core.Queue;
+﻿using Core.ILogs;
+using Core.Queue;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace UnitTests.Api.Core
+namespace UnitTests.Api.CoreTests
 {
     public class BackgroundTaskQueueTests
     {
         private readonly BackgroundTaskQueue _backgroundTaskQueue;
-        private readonly Mock<ILogger<BackgroundTaskQueue>> _mockLogger;
+        private readonly Mock<ILoggerHelpers<BackgroundTaskQueue>> _mockLogger;
         private readonly Func<CancellationToken, Task> _workItem;
 
         public BackgroundTaskQueueTests()
         {
-            _mockLogger = new Mock<ILogger<BackgroundTaskQueue>>();
+            _mockLogger = new Mock<ILoggerHelpers<BackgroundTaskQueue>>();
             _workItem = ct => Task.CompletedTask;
 
             _backgroundTaskQueue = new BackgroundTaskQueue(_mockLogger.Object);
@@ -31,14 +32,13 @@ namespace UnitTests.Api.Core
             Assert.NotNull(dequeued);
             await dequeued(CancellationToken.None);
 
+            
             _mockLogger.Verify(
                  l => l.Log(
-                     LogLevel.Information,
-                     It.IsAny<EventId>(),
-                     It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Enqueue work item")),
-                     null,
-                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                 Times.AtLeastOnce);
+                     Core.ILogs.LogLevel.Information,
+                     It.Is<string>(s => s.Contains("Enqueue work item")),
+                     It.Is<object[]>(args => args.Length == 3 && args[0].ToString() == "True" && args[1].ToString() == "TestProcess")
+                 ),Times.AtLeastOnce);
         }
 
         [Fact]

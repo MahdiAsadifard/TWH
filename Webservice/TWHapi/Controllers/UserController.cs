@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Core.Exceptions;
+using Core.ILogs;
 using Core.NLogs;
 using Core.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -14,18 +15,22 @@ namespace TWHapi.Controllers
     public class UserController(
             IUserOperations user,
             IMapper mapper,
-            IJWTHelper jwhHelper
+            IJWTHelper jwhHelper,
+            ILoggerHelpers<UserController> logger
         ) : BaseController
     {
         private readonly IJWTHelper _jwtHelper = jwhHelper;
         private readonly IUserOperations _user = user;
         private readonly IMapper _mapper = mapper;
+        private readonly ILoggerHelpers<UserController> _logger = logger;
 
         [Authorize]
         [Route("")]
         [HttpGet]
         public async Task<ServiceResponse<IEnumerable<UserResponseDTO>>> GetUsersAsync()
         {
+            _logger.Log(Core.ILogs.LogLevel.Warning, " erroe>>>> UserController/GetUsersAsync: Getting all users one: {one}", "1");
+            _logger.Log(Core.ILogs.LogLevel.Debug, " warn 2>>>> UserController/GetUsersAsync: Getting all users one: {one}", "1");
             var response = await _user.GetUsersAsync();
 
             if (!response.IsSuccess) return new ServiceResponse<IEnumerable<UserResponseDTO>>(response.Message, response.StatusCode);

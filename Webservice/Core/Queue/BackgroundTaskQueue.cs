@@ -1,6 +1,6 @@
 ﻿using Core.Common;
 using Core.Exceptions;
-using Microsoft.Extensions.Logging;
+using Core.ILogs;
 using System.Threading.Channels;
 
 namespace Core.Queue
@@ -8,9 +8,9 @@ namespace Core.Queue
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
         private readonly Channel<Func<CancellationToken, Task>> _queue;
-        private readonly ILogger<BackgroundTaskQueue> _logger;
+        private readonly ILoggerHelpers<BackgroundTaskQueue> _logger;
 
-        public BackgroundTaskQueue(ILogger<BackgroundTaskQueue> logger)
+        public BackgroundTaskQueue(ILoggerHelpers<BackgroundTaskQueue> logger)
         {
             this._logger = logger;
 
@@ -31,13 +31,13 @@ namespace Core.Queue
                 ArgumentsValidator.ThrowIfNull(nameof(workItem), workItem);
 
                 var tryWrite = _queue.Writer.TryWrite(workItem);
-                _logger.LogInformation("BackgroundTaskQueue/EnqueueAsync: Enqueue work item. Success: {TryWrite}, ProcessName {ProcessName}, time: [{time}]ms",
+                _logger.Log(ILogs.LogLevel.Information, "BackgroundTaskQueue/EnqueueAsync: Enqueue work item. Success: {TryWrite}, ProcessName {ProcessName}, time: [{time}]ms",
                     tryWrite,
                     processName, spw.ElapsedMilliseconds);
 
                 if (!tryWrite)
                 {
-                    _logger.LogInformation("BackgroundTaskQueue/EnqueueAsync: Queue is full, waiting to enqueue work item, ProcessName: {ProcessName}, time: [{time}]ms", processName, spw.ElapsedMilliseconds);
+                    _logger.Log(ILogs.LogLevel.Information, "BackgroundTaskQueue/EnqueueAsync: Queue is full, waiting to enqueue work item, ProcessName: {ProcessName}, time: [{time}]ms", processName, spw.ElapsedMilliseconds);
 
                     // Fallback to async wait if TryWrite fails (rare for unbounded)
                     return _queue.Writer.WriteAsync(workItem);
@@ -46,12 +46,12 @@ namespace Core.Queue
             }
             catch (OperationCanceledException ex)
             {
-                _logger.LogError(ex, "BackgroundTaskQueue/EnqueueAsync: OperationCanceledException Error occurred while enqueuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                _logger.Log(ex, "BackgroundTaskQueue/EnqueueAsync: OperationCanceledException Error occurred while enqueuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "BackgroundTaskQueue/EnqueueAsync: Error occurred while enqueuing work item. ProcessName: {ProcessName}, time: [{time}]ms", processName, spw.ElapsedMilliseconds);
+                _logger.Log(ex, "BackgroundTaskQueue/EnqueueAsync: Error occurred while enqueuing work item. ProcessName: {ProcessName}, time: [{time}]ms", processName, spw.ElapsedMilliseconds);
                 throw;
             }
         }
@@ -62,17 +62,17 @@ namespace Core.Queue
             try
             {
                 var workItem = await _queue.Reader.ReadAsync(cancellationToken);
-                _logger.LogInformation("BackgroundTaskQueue/DequeuAsync: Dequeued work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                _logger.Log(ILogs.LogLevel.Information, "BackgroundTaskQueue/DequeuAsync: Dequeued work item. time: [{time}]ms", spw.ElapsedMilliseconds);
                 return workItem;
             }
             catch (OperationCanceledException ex)
             {
-                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: OperationCanceledException Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                _logger.Log(ex, "BackgroundTaskQueue/DequeuAsync: OperationCanceledException Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "BackgroundTaskQueue/DequeuAsync: Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
+                _logger.Log(ex, "BackgroundTaskQueue/DequeuAsync: Error occurred while dequeuing work item. time: [{time}]ms", spw.ElapsedMilliseconds);
                 throw;
             }
         }
