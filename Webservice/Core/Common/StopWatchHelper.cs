@@ -15,6 +15,7 @@ namespace Core.Common
         {
             this.Stop();
             _stopwatch = null;
+            GC.SuppressFinalize(this);
         }
 
         public void Start() => _stopwatch?.Start();
