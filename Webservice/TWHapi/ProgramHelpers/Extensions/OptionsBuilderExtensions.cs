@@ -1,4 +1,5 @@
 ﻿using Core.Queue;
+using Core.Token;
 using Models.Options;
 
 namespace TWHapi.ProgramHelpers.Extensions
@@ -18,6 +19,7 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             services.Configure<ServiceInfoOptions>(configuration.GetSection(ServiceInfoOptions.OptionName));
             services.Configure<DatabseOptions>(configuration.GetSection(DatabseOptions.OptionName));
+            services.Configure<JWTOptions>(configuration.GetSection(JWTOptions.OptionName));
 
             return services;
         }

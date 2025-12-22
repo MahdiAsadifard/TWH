@@ -5,7 +5,7 @@ using Core.Response;
 using Models.DTOs.User;
 using Models.Models;
 using Moq;
-using Services.Authentication;
+using Core.Token;
 using Services.Interfaces;
 using System.Net;
 using TWHapi.Controllers;

@@ -3,12 +3,12 @@ using Core.Common;
 using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
+using Core.Token;
+using Core.Token.Models;
 using Microsoft.Extensions.Configuration;
-using Models.DTOs.JWT;
 using Models.DTOs.Login;
 using Models.DTOs.User;
 using Models.Models;
-using Models.Options;
 using MongoDB.Driver;
 using Services.Collections;
 using Services.Interfaces;
@@ -74,7 +74,15 @@ namespace Services.Authentication
                 throw new ApiException(ApiExceptionCode.Unauthorized, "Provided wrong password.", HttpStatusCode.Unauthorized);
             }
 
-            var token = _jWTHelper.GenerateJWTToken(userRecord);
+            var claimItems = new JWTClaimItems
+            {
+                FirstName = userRecord.FirstName,
+                LastName = userRecord.LastName,
+                Uri = userRecord.Uri,
+                Email = userRecord.Email
+            };
+
+            var token = _jWTHelper.GenerateJWTToken(claimItems);
 
             var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
 
@@ -83,7 +91,7 @@ namespace Services.Authentication
                 Token = new JwtCarrierDTO
                 {
                     AccessToken = token,
-                    expiry = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.expiry)}").Get<string>() ?? string.Empty,
+                    expiry = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Expiry)}").Get<string>() ?? string.Empty,
                 },
                 User = uderDto
             };

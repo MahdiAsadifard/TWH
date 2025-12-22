@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Models.Options;
+using Core.Token;
 
 namespace TWHapi.ProgramHelpers.Extensions
 {

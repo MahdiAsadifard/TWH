@@ -1,4 +1,4 @@
-﻿using Models.DTOs.JWT;
+﻿using Core.Token;
 using Models.DTOs.User;
 
 namespace Models.DTOs.Login

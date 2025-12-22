@@ -6,8 +6,8 @@ using Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.User;
-using Services.Authentication;
 using Services.Interfaces;
+using Core.Token;
 
 namespace TWHapi.Controllers
 {
