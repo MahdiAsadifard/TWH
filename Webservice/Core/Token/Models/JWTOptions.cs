@@ -1,6 +1,6 @@
 ﻿namespace Core.Token
 {
-    public class JWTOptions
+    public record JWTOptions
     {
         public const string OptionName = "JWT";
         public string Key { get; set; } = string.Empty;
