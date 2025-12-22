@@ -1,8 +1,5 @@
 ﻿using Core.Exceptions;
-using Core.NLogs;
 using Core.Token.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
