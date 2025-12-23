@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text;
 using Core.NLogs;
+using Core.Token;
 
 namespace TWHapi.ProgramHelpers.Middlewares
 {
@@ -70,9 +71,9 @@ namespace TWHapi.ProgramHelpers.Middlewares
                 ValidateLifetime = false,
                 RequireExpirationTime = true,
                 ValidateIssuer = true,
-                ValidAudience = _configuration.GetSection("JWT:Audience").Get<string>(),
-                ValidIssuer = _configuration.GetSection("JWT:Issuer").Get<string>(),
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Key").Get<string>()))
+                ValidAudience = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Audience)}").Get<string>(),
+                ValidIssuer = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Issuer)}").Get<string>(),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Key)}").Get<string>() ?? string.Empty))
             };
         }
 

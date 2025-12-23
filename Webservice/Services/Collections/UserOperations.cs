@@ -144,5 +144,29 @@ namespace Services.Collections
             }
         }
 
+        public async Task<ServiceResponse<object>> UpdateOneAsync(UserRecord userRecord)
+        {
+            try
+            {
+                ArgumentsValidator.ThrowIfNull(nameof(userRecord), userRecord);
+                var filter = Builders<UserRecord>.Filter.Eq(x => x._Id, userRecord._Id);
+                var result = await _user.ReplaceOneAsync(filter, userRecord);
+                if (result.IsAcknowledged && result.ModifiedCount > 0)
+                {
+                    return new ServiceResponse<object>(true, HttpStatusCode.OK);
+                }
+                else
+                {
+                    return new ServiceResponse<object>("No document updated.", HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                var msg = $"UserOperations: Error on updating user: {ex.Message}";
+                NLogHelpers<UserOperations>.Logger.Error(msg);
+                return new ServiceResponse<object>(msg, HttpStatusCode.BadRequest);
+            }
+        }
+
     }
 }

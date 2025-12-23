@@ -15,5 +15,6 @@ namespace Services.Interfaces
 
         Task<ServiceResponse<UserRecord>> GetUserByUriAsync(string uri);
         Task<ServiceResponse<UserRecord>> InsertOneAsync(UserRequestDTO user);
+        Task<ServiceResponse<object>> UpdateOneAsync(UserRecord userRecord);
     }
 }

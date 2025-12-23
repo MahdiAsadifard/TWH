@@ -84,6 +84,17 @@ namespace Services.Authentication
 
             var token = _jWTHelper.GenerateJWTToken(claimItems);
 
+            // Save refresh token
+            var refreshToken = _jWTHelper.GenerateRefreshToken();
+            userRecord.RefreshTokens = new UserRefreshTokens()
+            {
+                Token = refreshToken,
+                ExpiryUtc = _jWTHelper.GetRefreshTokenExpiryDateTimeUtc(),
+            };
+
+            _ = _userOperations.UpdateOneAsync(userRecord);
+            //
+
             var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
 
             var reponse = new LoginRsponseDTO
@@ -91,7 +102,8 @@ namespace Services.Authentication
                 Token = new JwtCarrierDTO
                 {
                     AccessToken = token,
-                    expiry = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.Expiry)}").Get<string>() ?? string.Empty,
+                    Expiry = _jWTHelper.GetTokenExpiryDateTimeUtc().ToString("o"),
+                    RefreshToken = refreshToken,
                 },
                 User = uderDto
             };

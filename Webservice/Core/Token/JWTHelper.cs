@@ -47,6 +47,21 @@ namespace Core.Token
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         }
 
+        public IOptions<JWTOptions> GetJWTOptions()
+        {
+            return _options;
+        }
+
+        public DateTime GetTokenExpiryDateTimeUtc()
+        {
+            return DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.ExpiryInMinutes));
+        }
+
+        public DateTime GetRefreshTokenExpiryDateTimeUtc()
+        {
+            return DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.RefreshTokenExpiryInMinutes));
+        }
+
         #endregion
 
         #region private methods
@@ -88,7 +103,7 @@ namespace Core.Token
             return new JwtSecurityToken(
                 claims: GetClaims(),
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.Expiry)),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.ExpiryInMinutes)),
                 issuer: _options.Value.Issuer,
                 audience: _options.Value.Audience,
                 signingCredentials: GetSigningCredentials());
@@ -100,7 +115,7 @@ namespace Core.Token
             {
                 Subject = new ClaimsIdentity(GetClaims()),
                 NotBefore = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.Expiry)),
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_options.Value.ExpiryInMinutes)),
                 Issuer = _options.Value.Issuer,
                 Audience = _options.Value.Audience,
                 SigningCredentials = GetSigningCredentials(),
