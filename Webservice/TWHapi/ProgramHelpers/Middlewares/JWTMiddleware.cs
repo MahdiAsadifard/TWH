@@ -45,6 +45,11 @@ namespace TWHapi.ProgramHelpers.Middlewares
                 var validateParameters = GetValidationParameters();
 
                 jwtTokenHandler.ValidateToken(token, validateParameters, out var validatedToken);
+
+                var expiryInMinutes = _configuration.GetSection($"{JWTOptions.OptionName}:{nameof(JWTOptions.ExpiryInMinutes)}").Get<string>();
+
+                if (validatedToken.ValidTo < DateTime.UtcNow.AddMinutes(Convert.ToDouble(expiryInMinutes)))
+                    throw new SecurityTokenNotYetValidException("Token has expired");
             }
             catch (Exception e)
             {
