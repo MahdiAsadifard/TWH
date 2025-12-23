@@ -58,7 +58,7 @@ namespace Models.Models
         public bool Disabled { get; set; } = false;
 
         [BsonIgnoreIfNull]
-        public UserRefreshTokens RefreshTokens { get; set; }
+        public UserRefreshToken RefreshToken { get; set; }
 
     }
 }

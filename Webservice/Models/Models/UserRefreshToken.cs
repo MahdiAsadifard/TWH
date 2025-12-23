@@ -1,6 +1,6 @@
 ﻿namespace Models.Models
 {
-    public record UserRefreshTokens
+    public record UserRefreshToken
     {
         public required string Token { get; set; }
         public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;

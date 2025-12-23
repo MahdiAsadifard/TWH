@@ -86,12 +86,11 @@ namespace Services.Authentication
 
             // Save refresh token
             var refreshToken = _jWTHelper.GenerateRefreshToken();
-            userRecord.RefreshTokens = new UserRefreshTokens()
+            userRecord.RefreshToken = new UserRefreshToken()
             {
                 Token = refreshToken,
                 ExpiryUtc = _jWTHelper.GetRefreshTokenExpiryDateTimeUtc(),
             };
-
             _ = _userOperations.UpdateOneAsync(userRecord);
             //
 
