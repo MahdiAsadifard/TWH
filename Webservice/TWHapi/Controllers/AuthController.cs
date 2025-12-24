@@ -9,7 +9,8 @@ using Services.Interfaces;
 
 namespace TWHapi.Controllers
 {
-    [Route("api/auth")]
+    [Authorize]
+    [Route("api/{customerUri?}/auth")]
     public class AuthController(
             IConfiguration configuration,
             IMapper mapper,

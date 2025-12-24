@@ -6,7 +6,8 @@ using Services.ServiceProcessing;
 
 namespace TWHapi.Controllers
 {
-    [Route("api/health")]
+    [Authorize]
+    [Route("api/{customerUri?}/health")]
     public class HealthController(
             ILoggerHelpers<HealthController> logger,
             IBackgroundTaskQueue queue,
@@ -30,6 +31,14 @@ namespace TWHapi.Controllers
                 _logger.Log(Core.ILogs.LogLevel.Information, "2- Service Processing Task Completed.");
             }, ServiceProcessingName.HealthControllerCheck);
             return Ok();
+        }
+
+
+
+        [HttpGet("customerId")]
+        public async Task<IActionResult> TestCustomerIdFromRoute([FromRoute] string customerUri)
+        {
+            return Ok(new { message = $"CustomerUri from route: {customerUri}" });
         }
     }
 }

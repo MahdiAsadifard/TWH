@@ -11,7 +11,8 @@ using Core.Token;
 
 namespace TWHapi.Controllers
 {
-    [Route("api/user")]
+    [Authorize]
+    [Route("api/{customerUri?}/user")]
     public class UserController(
             IUserOperations user,
             IMapper mapper,
@@ -24,7 +25,6 @@ namespace TWHapi.Controllers
         private readonly IMapper _mapper = mapper;
         private readonly ILoggerHelpers<UserController> _logger = logger;
 
-        [Authorize]
         [Route("")]
         [HttpGet]
         public async Task<ServiceResponse<IEnumerable<UserResponseDTO>>> GetUsersAsync()
@@ -39,7 +39,6 @@ namespace TWHapi.Controllers
             return new ServiceResponse<IEnumerable<UserResponseDTO>>(dto);
         }
 
-        [Authorize]
         [Route("{uri}")]
         [HttpGet]
         public async Task<ServiceResponse<UserResponseDTO>> GetUsersByUriAsync([FromRoute] string uri)
@@ -63,7 +62,6 @@ namespace TWHapi.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("register")]
         public async Task<ServiceResponse<UserResponseDTO>> InsertOneAsync([FromBody] UserRequestDTO submission)
         {
