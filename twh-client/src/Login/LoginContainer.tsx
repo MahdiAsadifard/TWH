@@ -66,7 +66,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             Email: email,
             Password: password
         };
-        await ApiRequest({ url: `auth/login`, method: 'POST', body: submission, withToken: false  });
+        await ApiRequest({ url: `csid/auth/login`, method: 'POST', body: submission, withToken: false  });
 
         if(error || !fetchResponse.success) {
             let title = 'Error', body = '';
