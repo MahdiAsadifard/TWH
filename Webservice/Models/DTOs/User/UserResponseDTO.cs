@@ -1,6 +1,6 @@
 ﻿namespace Models.DTOs.User
 {
-    public class UserResponseDTO
+    public record UserResponseDTO
     {
         public string Uri { get; set; }
 

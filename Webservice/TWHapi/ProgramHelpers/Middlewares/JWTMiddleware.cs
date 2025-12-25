@@ -17,12 +17,6 @@ namespace TWHapi.ProgramHelpers.Middlewares
         private readonly IConfiguration _configuration;
         private readonly RequestDelegate _nextDelegate;
 
-        private const string RefreshTokenFlag = "X-Refresh-Token";
-        private const string CustomerUriFlag = "customerUri";
-        private const string AuthorizationFlag = "Authorization";
-        private const string CookieAccessTokenFlag = "newAccessToken";
-        private const string CookieRefreshTokenFlag = "newRefreshToken";
-
         private IUserOperations _userOperations = null;
         private IJWTHelper _jwtHelper = null;
         private ServiceResponse<UserRecord> _userResponse = null;
@@ -151,12 +145,12 @@ namespace TWHapi.ProgramHelpers.Middlewares
 
         private string GetRefreshTokenFromHeader(HttpContext context)
         {
-            return context.Request.Headers[RefreshTokenFlag].FirstOrDefault() ?? string.Empty;
+            return context.Request.Headers[TokenConstants.RefreshTokenFlag].FirstOrDefault() ?? string.Empty;
         }
 
         private string GetAccessTokenFromHeader(ref HttpContext context)
         {
-            var token = context.Request.Headers[AuthorizationFlag].FirstOrDefault()?.Split(' ').Last(); // remove Bearer
+            var token = context.Request.Headers[TokenConstants.AuthorizationFlag].FirstOrDefault()?.Split(' ').Last(); // remove Bearer
             if (token is null)
             {
                 throw new EntryPointNotFoundException("Access Token not found");
@@ -171,7 +165,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
 
         private string GetCustomerUriFromRoute(ref HttpContext context)
         {
-            if (context.Request.RouteValues.TryGetValue(CustomerUriFlag, out object? customerId))
+            if (context.Request.RouteValues.TryGetValue(TokenConstants.CustomerUriFlag, out object? customerId))
             {
                 return customerId?.ToString() ?? string.Empty;
             }
@@ -190,7 +184,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
 
             // Now update cookie with new refresh token
             context.Response.Cookies.Append(
-                CookieRefreshTokenFlag,
+                TokenConstants.CookieRefreshTokenFlag,
                 refTokenUser.Data.RefreshToken.Token,
                 new CookieOptions
                 {
@@ -200,17 +194,9 @@ namespace TWHapi.ProgramHelpers.Middlewares
 
         private void RegenerateAccessToken(ref HttpContext context)
         {
-            var claim = new Core.Token.Models.JWTClaimItems
-            {
-                FirstName = this._userResponse.Data!.FirstName,
-                LastName = this._userResponse.Data!.LastName,
-                Uri = this._userResponse.Data!.Uri,
-                Email = this._userResponse.Data!.Email,
-            };
-
-            var newAccessToken = _jwtHelper.GenerateJWTToken(claim);
+            var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(this._userResponse.Data));
             context.Response.Cookies.Append(
-                CookieAccessTokenFlag,
+                TokenConstants.CookieAccessTokenFlag,
                 newAccessToken,
                 new CookieOptions
                 {

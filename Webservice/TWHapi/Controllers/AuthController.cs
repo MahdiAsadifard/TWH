@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Core.Exceptions;
 using Core.Response;
+using Core.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.Login;
 using Services.Authentication;
 using Services.Interfaces;
+using System.Net;
 
 namespace TWHapi.Controllers
 {
@@ -15,13 +17,15 @@ namespace TWHapi.Controllers
             IConfiguration configuration,
             IMapper mapper,
             IUserOperations userOperations,
-            IAuthOperations authOperations
+            IAuthOperations authOperations,
+            IJWTHelper jwtHelper
         ) : BaseController
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly IMapper _mapper = mapper;
         private readonly IUserOperations _userOperations = userOperations;
         private readonly IAuthOperations _authOperations = authOperations;
+        private readonly IJWTHelper _jwtHelper = jwtHelper;
 
         [AllowAnonymous]
         [HttpPost]
@@ -59,6 +63,54 @@ namespace TWHapi.Controllers
             catch (Exception e)
             {
                 throw new Exception("Error on Login user." + e.Message + e.InnerException?.Message, e);
+            }
+        }
+
+        [HttpPost]
+        [Route("resettokens")]
+        public async Task<ServiceResponse<ResetTokensDTO>> ResetTokens([FromRoute] string customerUri)
+        {
+            try
+            {
+                // Regenerate refresh token
+                var userRecord = await _userOperations.RegenrateRefreshToken(customerUri);
+                var newRefreshToken = userRecord.Data.RefreshToken.Token;
+                Response.Cookies.Append(
+                    TokenConstants.CookieRefreshTokenFlag,
+                    newRefreshToken,
+                    new CookieOptions
+                    {
+                        MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes))
+                    });
+
+                // Generate new access token
+                var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(userRecord.Data));
+                Response.Cookies.Append(
+                    TokenConstants.CookieAccessTokenFlag,
+                    newAccessToken,
+                    new CookieOptions
+                    {
+                        MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes))
+                    });
+
+
+                var reponse = new ResetTokensDTO()
+                {
+                    AccessToken = newAccessToken,
+                    AccessTokenExpityMinutes = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes)),
+                    RefreshToken = newRefreshToken,
+                    RefreshTokenExpityMinutes = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes))
+                };
+
+                return new ServiceResponse<ResetTokensDTO>(reponse, HttpStatusCode.OK);
+            }
+            catch (ApiException e)
+            {
+                throw new ApiException(e.ErrorCode, e.Message, e.StatusCode, e);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error on reset tokens user: {customerUri}, \nMessage: {e.Message}, \nInnerException: {e.InnerException?.Message}", e);
             }
         }
     }
