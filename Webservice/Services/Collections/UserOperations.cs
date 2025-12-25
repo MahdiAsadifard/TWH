@@ -3,6 +3,7 @@ using Core.Common;
 using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
+using Core.Token;
 using Database;
 using Models.Common;
 using Models.DTOs.User;
@@ -18,6 +19,7 @@ namespace Services.Collections
     {
         private readonly IMongoCollection<UserRecord> _user;
         private readonly IMapper _mapper;
+        private readonly IJWTHelper _jwtHelper;
 
         public byte[] GenerateHashPassword(string password, string salt)
         {
@@ -25,10 +27,14 @@ namespace Services.Collections
             return hashedPassword;
         }
 
-        public UserOperations(IDatabase<UserRecord> database, IMapper mapper)
+        public UserOperations(
+            IDatabase<UserRecord> database,
+            IMapper mapper,
+            IJWTHelper jwtHelper)
         {
             _user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
             _mapper = mapper;
+            this._jwtHelper = jwtHelper;
         }
 
         public async Task<ServiceResponse<IEnumerable<UserRecord>>> GetUsersAsync(
@@ -97,6 +103,11 @@ namespace Services.Collections
                 filters.Add(Builders<UserRecord>.Filter.Eq(x => x.Uri, uri));
                 var users = await this.GetUsersAsync(filters);
 
+                if (users.Data.Count() == 0)
+                {
+                    throw new ApiException(ApiExceptionCode.NotFound, "User not found", HttpStatusCode.NotFound);
+                }
+
                 if (users.Data.Count() > 1)
                 {
                     var msg = $"Found multiple user with same uri: {uri}";
@@ -108,7 +119,7 @@ namespace Services.Collections
             }
             catch (ApiException ex)
             {
-                var msg = $"UserOperations: Error on fetching user uri:${uri} - message {ex.Message}";
+                var msg = $"UserOperations: Error on fetching user uri:{uri} - message {ex.Message}";
                 NLogHelpers<UserOperations>.Logger.Error(msg);
                 throw new ApiException(ApiExceptionCode.Conflict, msg, HttpStatusCode.Conflict);
             }
@@ -144,7 +155,7 @@ namespace Services.Collections
             }
         }
 
-        public async Task<ServiceResponse<object>> UpdateOneAsync(UserRecord userRecord)
+        public async Task<ServiceResponse<UserRecord>> UpdateOneAsync(UserRecord userRecord)
         {
             try
             {
@@ -153,19 +164,68 @@ namespace Services.Collections
                 var result = await _user.ReplaceOneAsync(filter, userRecord);
                 if (result.IsAcknowledged && result.ModifiedCount > 0)
                 {
-                    return new ServiceResponse<object>(true, HttpStatusCode.OK);
+                    return new ServiceResponse<UserRecord>(userRecord, HttpStatusCode.OK);
                 }
                 else
                 {
-                    return new ServiceResponse<object>("No document updated.", HttpStatusCode.BadRequest);
+                    return new ServiceResponse<UserRecord>("No document updated.", HttpStatusCode.BadRequest);
                 }
             }
             catch (Exception ex)
             {
                 var msg = $"UserOperations: Error on updating user: {ex.Message}";
                 NLogHelpers<UserOperations>.Logger.Error(msg);
-                return new ServiceResponse<object>(msg, HttpStatusCode.BadRequest);
+                throw new ApiException(ApiExceptionCode.BadRequest, msg, HttpStatusCode.BadRequest);
             }
+        }
+
+        public async Task<ServiceResponse<UserRecord>> RegenrateRefreshToken(string uri)
+        {
+            ArgumentsValidator.ThrowIfNull(nameof(uri), uri);
+
+            var response = await this.GetUserByUriAsync(uri);
+            
+            if (!response.IsSuccess)
+            {
+                return response;
+            }
+
+            response.Data.RefreshToken = this.GetNewRefreshToken();
+            var updateResult = await this.UpdateOneAsync(response.Data);
+            
+            if (!updateResult.IsSuccess)
+            {
+                return new ServiceResponse<UserRecord>(updateResult.Message, updateResult.StatusCode);
+            }
+            return new ServiceResponse<UserRecord>(response.Data, HttpStatusCode.OK);
+        }
+        
+        /// <summary>
+        /// Compare requested token with current then regenerate new one
+        /// </summary>
+        /// <param name="userRecord"></param>
+        /// <param name="requestedToken"></param>
+        /// <returns></returns>
+        /// <exception cref="ApiException"></exception>
+        public async Task<ServiceResponse<UserRecord>> RegenrateRefreshToken(UserRecord userRecord, string requestedToken)
+        {
+            ArgumentsValidator.ThrowIfNull(nameof(UserRecord), userRecord);
+            ArgumentsValidator.ThrowIfNull(nameof(requestedToken), requestedToken);
+
+            if (!userRecord.RefreshToken.Token.Equals(requestedToken))
+            {
+                throw new ApiException(ApiExceptionCode.Unauthorized, "Invalid old refresh token. Try to signing again", HttpStatusCode.Unauthorized);
+            }
+            return await this.RegenrateRefreshToken(userRecord.Uri);
+        }
+
+        public UserRefreshToken GetNewRefreshToken()
+        {
+            return new UserRefreshToken()
+            {
+                Token = this._jwtHelper.GenerateRefreshToken(),
+                ExpiryUtc = this._jwtHelper.GetRefreshTokenExpiryDateTimeUtc(),
+            };
         }
 
     }

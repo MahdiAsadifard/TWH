@@ -9,5 +9,6 @@
         public string ExpiryInMinutes { get; set; } = string.Empty;
         public string EnableJWE { get; set; } = string.Empty;
         public string RefreshTokenExpiryInMinutes { get; set; } = string.Empty;
+        public int RefreshTokenMinLength { get; set; }
     }
 }

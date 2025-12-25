@@ -12,7 +12,16 @@ namespace Database
         private readonly IOptions<DatabseOptions> _database;
         private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase _mongodatabase;
+        
+        public Database(IOptions<DatabseOptions> database)
+        {
+            _database = database;
 
+            _mongoClient = new MongoClient(mongoClientSettings);
+            _mongodatabase = _mongoClient.GetDatabase(_database.Value.DatabaseName);
+        }
+
+        #region Public Methods
         public SslSettings sslSettings
         {
             get
@@ -24,6 +33,17 @@ namespace Database
                 };
             }
         }
+
+        public IMongoCollection<T> GetCollection(string name)
+        {
+            ArgumentsValidator.ThrowIfNull(name, nameof(name));
+
+            return _mongodatabase.GetCollection<T>(name);
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private MongoClientSettings mongoClientSettings
         {
@@ -37,19 +57,7 @@ namespace Database
                 };
             }
         }
-        public Database(IOptions<DatabseOptions> database)
-        {
-            _database = database;
 
-            _mongoClient = new MongoClient(mongoClientSettings);
-            _mongodatabase = _mongoClient.GetDatabase(_database.Value.DatabaseName);
-        }
-
-        public IMongoCollection<T> GetCollection(string name)
-        {
-            ArgumentsValidator.ThrowIfNull(name, nameof(name));
-
-            return _mongodatabase.GetCollection<T>(name);
-        }
+        #endregion
     }
 }

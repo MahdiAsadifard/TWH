@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Services
     .InitializeCORS(builder.Configuration)
+    .InitializeJWT(builder.Configuration)
     .InitializeServices(builder.Configuration)
     .InitializeOptions(builder.Configuration);
 

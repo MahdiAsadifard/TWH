@@ -3,6 +3,7 @@ using Core.Token.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using System.Buffers.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -44,7 +45,9 @@ namespace Core.Token
 
         public string GenerateRefreshToken()
         {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            //return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            //return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+            return Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
         }
 
         public IOptions<JWTOptions> GetJWTOptions()

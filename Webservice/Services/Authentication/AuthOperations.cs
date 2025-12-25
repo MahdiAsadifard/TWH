@@ -74,6 +74,11 @@ namespace Services.Authentication
                 throw new ApiException(ApiExceptionCode.Unauthorized, "Provided wrong password.", HttpStatusCode.Unauthorized);
             }
 
+            // Save refresh token
+            userRecord = _userOperations.RegenrateRefreshToken(userRecord.Uri).Result.Data;
+            
+            var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
+
             var claimItems = new JWTClaimItems
             {
                 FirstName = userRecord.FirstName,
@@ -82,27 +87,13 @@ namespace Services.Authentication
                 Email = userRecord.Email
             };
 
-            var token = _jWTHelper.GenerateJWTToken(claimItems);
-
-            // Save refresh token
-            var refreshToken = _jWTHelper.GenerateRefreshToken();
-            userRecord.RefreshToken = new UserRefreshToken()
-            {
-                Token = refreshToken,
-                ExpiryUtc = _jWTHelper.GetRefreshTokenExpiryDateTimeUtc(),
-            };
-            _ = _userOperations.UpdateOneAsync(userRecord);
-            //
-
-            var uderDto = _mapper.Map<UserResponseDTO>(userRecord);
-
             var reponse = new LoginRsponseDTO
             {
                 Token = new JwtCarrierDTO
                 {
-                    AccessToken = token,
+                    AccessToken = _jWTHelper.GenerateJWTToken(claimItems),
                     Expiry = _jWTHelper.GetTokenExpiryDateTimeUtc().ToString("o"),
-                    RefreshToken = refreshToken,
+                    RefreshToken = userRecord.RefreshToken.Token,
                 },
                 User = uderDto
             };

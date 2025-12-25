@@ -17,6 +17,7 @@ namespace TWHapi.ProgramHelpers.Extensions
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
+
             services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -27,19 +28,12 @@ namespace TWHapi.ProgramHelpers.Extensions
                 });
             });
 
-            services.Configure<DatabseOptions>(configuration.GetSection("ServerInfo"));
-
-            services.InitializeJWT(configuration);
-
+            // -------------- singleton services ----------------
             // Logger
             services.AddSingleton(typeof(ILoggerHelpers<>), typeof(LoggerHelpers<>));
 
-            // JWT
-            services.AddScoped<IJWTHelper, JWTHelper>();
-
             // Queue
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-
 
             // Processing Services
             services.AddSingleton<IServiceProcessing, ServiceProcessing>();
@@ -50,8 +44,15 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Mapper: All DTOs listed in Models assebly
             services.AddAutoMapper(cfg => { }, Utility.GetModelsAssemblies());
 
+            // -------------- scoped services ----------------
+
+            // JWT
+            services.AddScoped<IJWTHelper, JWTHelper>();
+
             // Database
-            services.AddSingleton(typeof(Database.IDatabase<>), typeof(Database.Database<>));
+            services.AddScoped(typeof(Database.IDatabase<>), typeof(Database.Database<>));
+
+            // Operations services
             services.AddScoped<IAuthOperations, AuthOperations>();
             services.AddScoped<IUserOperations, UserOperations>();
 
