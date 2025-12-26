@@ -61,9 +61,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
                     // Find customer by uri from db
                     await this.GetCustomerByUri(context);
 
-                    this.RegenerateAccessToken(ref context);
-
-                    var isValidRefrehToken = this.IsRefresfhTokenValid(ref context);
+                    var isValidRefrehToken = this.IsRefreshTokenValid(ref context);
                     // Regenerate refresh token and check if provided refresh token is valid and belongs to the user
                     if (!isValidRefrehToken)
                         await this.RegenerateRefreshToken(context);
@@ -126,7 +124,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
             return true;
         }
 
-        private bool IsRefresfhTokenValid(ref HttpContext context)
+        private bool IsRefreshTokenValid(ref HttpContext context)
         {
             ArgumentsValidator.ThrowIfNull(nameof(this._userResponse), this._userResponse);
 
@@ -189,18 +187,6 @@ namespace TWHapi.ProgramHelpers.Middlewares
                 new CookieOptions
                 {
                     MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes))
-                });
-        }
-
-        private void RegenerateAccessToken(ref HttpContext context)
-        {
-            var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(this._userResponse.Data));
-            context.Response.Cookies.Append(
-                TokenConstants.CookieAccessTokenFlag,
-                newAccessToken,
-                new CookieOptions
-                {
-                    MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes))
                 });
         }
     }

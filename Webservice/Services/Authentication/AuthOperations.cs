@@ -89,11 +89,12 @@ namespace Services.Authentication
 
             var reponse = new LoginRsponseDTO
             {
-                Token = new JwtCarrierDTO
+                Token = new TokensDTO
                 {
                     AccessToken = _jWTHelper.GenerateJWTToken(claimItems),
-                    Expiry = _jWTHelper.GetTokenExpiryDateTimeUtc().ToString("o"),
+                    AccessTokenExpityUTC = _jWTHelper.GetTokenExpiryDateTimeUtc(),
                     RefreshToken = userRecord.RefreshToken.Token,
+                    RefreshTokenExpityUTC = _jWTHelper.GetRefreshTokenExpiryDateTimeUtc(),
                 },
                 User = uderDto
             };

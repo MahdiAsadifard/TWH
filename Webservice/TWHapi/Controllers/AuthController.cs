@@ -68,41 +68,26 @@ namespace TWHapi.Controllers
 
         [HttpPost]
         [Route("resettokens")]
-        public async Task<ServiceResponse<ResetTokensDTO>> ResetTokens([FromRoute] string customerUri)
+        public async Task<ServiceResponse<TokensDTO>> ResetTokens([FromRoute] string customerUri)
         {
             try
             {
                 // Regenerate refresh token
                 var userRecord = await _userOperations.RegenrateRefreshToken(customerUri);
                 var newRefreshToken = userRecord.Data.RefreshToken.Token;
-                Response.Cookies.Append(
-                    TokenConstants.CookieRefreshTokenFlag,
-                    newRefreshToken,
-                    new CookieOptions
-                    {
-                        MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes))
-                    });
 
                 // Generate new access token
                 var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(userRecord.Data));
-                Response.Cookies.Append(
-                    TokenConstants.CookieAccessTokenFlag,
-                    newAccessToken,
-                    new CookieOptions
-                    {
-                        MaxAge = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes))
-                    });
 
-
-                var reponse = new ResetTokensDTO()
+                var reponse = new TokensDTO()
                 {
                     AccessToken = newAccessToken,
-                    AccessTokenExpityMinutes = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes)),
+                    AccessTokenExpityUTC = _jwtHelper.GetTokenExpiryDateTimeUtc(),// TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes)),
                     RefreshToken = newRefreshToken,
-                    RefreshTokenExpityMinutes = TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes))
+                    RefreshTokenExpityUTC = _jwtHelper.GetRefreshTokenExpiryDateTimeUtc(),// TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes)),
                 };
 
-                return new ServiceResponse<ResetTokensDTO>(reponse, HttpStatusCode.OK);
+                return new ServiceResponse<TokensDTO>(reponse, HttpStatusCode.OK);
             }
             catch (ApiException e)
             {
