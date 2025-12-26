@@ -28,7 +28,7 @@ export const DeleteAllCookies = () => {
         .split(";")
         .map((cookie) => {
             const cookiesName: string = cookie.split("=")[0].trim();
-            Object.values(Cookies).some(x => x == cookiesName) && (document.cookie = `${cookiesName}=${cookie}; expires=${new Date()}; path=/;`);
+            Object.values(Cookies).some(x => x == cookiesName) && (document.cookie = `${cookiesName}=${cookie}; expires=${new Date(1970, 1, 1)}; path=/;`);
         });
 }
 
