@@ -4,21 +4,6 @@ export enum Cookies {
     newRefreshToken = 'twh_refresh_token'
 };
 
-export const GetTokenFromCookies = () => {
-    return document
-        .cookie
-        .split(';')
-        .find(x => x.trim().startsWith(Cookies.token))
-        ?.split('=')[1];
-};
-export const GetRefreshTokenFromCookies = () => {
-    return document
-        .cookie
-        .split(';')
-        .find(x => x.trim().startsWith(Cookies.newRefreshToken))
-        ?.split('=')[1];
-};
-
 export const GetTokens = () => {
     const token = document
         .cookie
