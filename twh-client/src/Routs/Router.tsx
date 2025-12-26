@@ -8,6 +8,7 @@ const NotFound = lazy(() => import("../Loggedin/Common/NotFound"));
 const DashboardContainer = lazy(() => import("../Loggedin/Dashboard/DashboardContainer"));
 const SignedinContainer = lazy(() => import("../Loggedin/SignedinContainer"));
 const Signout = lazy(() => import('../Loggedin/Signout/Index'));
+const ApiCalls = lazy(() => import('../Samples/ApiCalls'));
 
 export const paths = {
     slash: '/',
@@ -16,6 +17,7 @@ export const paths = {
     dashboard: '/in/dashboard',
     profile: '/in/profile',
     signout: '/in/signout',
+    samples: '/samples',
     all: '*'
 };
 
@@ -45,6 +47,10 @@ export const router = createBrowserRouter([
     {
         path: paths.login,
         element: <LoginContainer />
+    },
+    {
+        path: paths.samples,
+        element: <ApiCalls/>
     },
     {
         path: paths.all,

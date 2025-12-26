@@ -24,6 +24,7 @@ import useCustomToast from  "../Loggedin/Common/UseCustomToast";
 import { StatusCode } from "../Global/RequestReponseHelper";
 import useFetch from "../Loggedin/Common/UseFetch";
 import Loading from "../Loggedin/Common/Loading";
+import * as Utils from "../Global/Utils";
 
 const CustomButton = lazy(() => import("../Loggedin/Common/CustomButton"));
 
@@ -79,7 +80,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                     title = 'Not Fund';
                     body = 'User not found, please signup!';
                     break;
-                    case StatusCode.BadRequest:
+                case StatusCode.BadRequest:
                     title = 'Bad Request';
                     body = 'Fill out email/password, try again!';
                     break;
@@ -92,13 +93,15 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                 body
             });
         }else {
-            const x = fetchResponse.response as any;
-            const now = new Date();
-            console.log(now);
-            
-            now.setSeconds(now.getSeconds() + x.data.token.expiry);
-            console.log(now.toUTCString());
-            document.cookie = `twh_token=${x.data.token?.accessToken};expires=${now.toUTCString()};domain=${window.location.hostname}`;
+            const response = fetchResponse.response as any;
+
+            const tokenExpiryDate = new Date(response.data.token.accessTokenExpityUTC);
+            const refreshTokenExpiryDate = new Date(response.data.token.refreshTokenExpityUTC);
+
+            // Set cookies
+            document.cookie = `${Utils.Cookies.token}=${response.data.token?.accessToken};expires=${tokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
+            document.cookie = `${Utils.Cookies.newRefreshToken}=${response.data.token?.refreshToken};expires=${refreshTokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
+
             if(callback) callback(true);
         }
     };

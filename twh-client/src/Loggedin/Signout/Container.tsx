@@ -2,14 +2,21 @@ import { lazy } from "react";
 import { useNavigate } from "react-router";
 import { paths } from "../../Routs/Router";
 
+import * as Utils from "../../Global/Utils";
+
 const Dialog = lazy(() => import('../Common/CustomDialog'));
 
 /**
  * Signout component only returns a Dialog
  * @returns 
  */
-export const Container = ()=>{
+export const Container = () => {
     const navigate = useNavigate();
+
+    const onSignout = (e: any) => {
+        Utils.DeleteAllCookies();
+        navigate(paths.slash);
+    };
 
     return (
         <Dialog title={`Signout`} content={`Are you sure you would like to signout?`}
@@ -19,11 +26,7 @@ export const Container = ()=>{
                         {
                             title: 'Yes',
                             apperance: 'primary',
-                            onClick: (e) => {
-
-                                console.log("Yes clicked!" + JSON.stringify(e));
-                                navigate(paths.slash);
-                            },
+                            onClick: (e) => onSignout(e),
                         },
                     ]
                 }

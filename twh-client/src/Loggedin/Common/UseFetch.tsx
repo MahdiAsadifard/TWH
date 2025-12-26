@@ -15,8 +15,8 @@ interface IProps {
 const UseFetch = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [controller, setController] = useState<AbortController>();
-    const token = Utils.GetTokenFromCookies();
+    const [abortController, setAbortController] = useState<AbortController>();
+    const { token, refreshToken} = Utils.GetTokens();
 
     const fetchResponse = {
         statusCode: StatusCode.InternalServerError,
@@ -33,11 +33,15 @@ const UseFetch = () => {
          if(url.startsWith('/')) url = url.substring(0,1);
         url = `${WebserviceUrl}${url}`;
         const ctor = new AbortController();
-        setController(ctor);
-
+        setAbortController(ctor);
+        
         const headers: HeadersInit = {
             "Content-Type": 'application/json',
-            ...(withToken &&  {"Authorization": `Bearer ${token} `})
+            ...(withToken &&  
+                {
+                    "Authorization": `Bearer ${token}`,
+                    "X-Refresh-Token": refreshToken,
+                })
         }
         
         setLoading(true)
@@ -45,7 +49,7 @@ const UseFetch = () => {
             method,
             headers,
             signal: ctor.signal,
-            body: JSON.stringify(body)
+            body: body ? JSON.stringify(body) : null
         })
         .then(response => {
             fetchResponse.statusCode = response.status;
@@ -72,8 +76,8 @@ const UseFetch = () => {
     };
 
     useEffect(() => {
-        return () => controller && controller?.abort();
-    }, [controller]);
+        return () => abortController && abortController?.abort();
+    }, [abortController]);
 
     return {error, loading, fetchResponse, ApiRequest};
 };
