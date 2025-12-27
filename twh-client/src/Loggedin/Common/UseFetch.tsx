@@ -122,6 +122,9 @@ const callFetch = async ({
         if (response.status === StatusCode.OK || response.status === StatusCode.NoContent) {
             fetchResponse.success = true;
             fetchResponse.response = await response.json();
+        }else {
+            fetchResponse.success = false;
+            fetchResponse.response = null;
         }
     } catch (err) {
         console.error("Fetch error:", err);
