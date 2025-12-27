@@ -83,9 +83,11 @@ namespace TWHapi.Controllers
                 // Generate new access token
                 var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(userRecord.Data));
 
+                var uderDto = _mapper.Map<UserResponseDTO>(userRecord.Data);
+
                 var reponse = new LoginRsponseDTO
                 {
-                    User = _mapper.Map<UserResponseDTO>(userRecord),
+                    User = uderDto,
                     Token = new TokensDTO()
                     {
                         AccessToken = newAccessToken,
