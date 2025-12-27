@@ -76,6 +76,9 @@ namespace TWHapi.Controllers
             {
                 ArgumentsValidator.ThrowIfNull(nameof(customerUri), customerUri);
 
+                var userRecordResponse = await _userOperations.GetUserByUriAsync(customerUri);
+                this._authOperations.IsRefreshTokenValid(Request, userRecordResponse.Data);
+
                 // Regenerate refresh token
                 var userRecord = await _userOperations.RegenrateRefreshToken(customerUri);
                 var newRefreshToken = userRecord.Data.RefreshToken.Token;

@@ -5,6 +5,7 @@ using Core.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Models.Models;
+using Services.Authentication;
 using Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -29,7 +30,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
             this._nextDelegate = nextDelegate;
         }
 
-        public async Task InvokeAsync(HttpContext context, IUserOperations userOperations, IJWTHelper jwtHelper)
+        public async Task InvokeAsync(HttpContext context, IUserOperations userOperations, IJWTHelper jwtHelper, IAuthOperations authOperations)
         {
             ArgumentsValidator.ThrowIfNull(nameof(context), context);
             try
@@ -61,7 +62,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
                     // Find customer by uri from db
                     await this.GetCustomerByUri(context);
 
-                    var isValidRefrehToken = this.IsRefreshTokenValid(ref context);
+                    var isValidRefrehToken = authOperations.IsRefreshTokenValid(context.Request, this._userResponse.Data);
                     // Regenerate refresh token and check if provided refresh token is valid and belongs to the user
                     if (!isValidRefrehToken)
                         await this.RegenerateRefreshToken(context);
@@ -122,23 +123,6 @@ namespace TWHapi.ProgramHelpers.Middlewares
             }
 
             return true;
-        }
-
-        private bool IsRefreshTokenValid(ref HttpContext context)
-        {
-            ArgumentsValidator.ThrowIfNull(nameof(this._userResponse), this._userResponse);
-
-            var savedToken = this._userResponse.Data!.RefreshToken;
-
-            var requestedRefreshToken = this.GetRefreshTokenFromHeader(context);
-
-            if (!savedToken.Token.Equals(requestedRefreshToken))
-            {
-                throw new SecurityTokenException("Requested refresh token is not belong to the user");
-            }
-
-            var delta = Convert.ToDateTime(this._userResponse.Data!.RefreshToken.ExpiryUtc) - DateTime.UtcNow;
-            return delta > TimeSpan.Zero;
         }
 
         private string GetRefreshTokenFromHeader(HttpContext context)

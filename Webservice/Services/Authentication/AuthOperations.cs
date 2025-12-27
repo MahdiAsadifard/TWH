@@ -5,13 +5,16 @@ using Core.NLogs;
 using Core.Response;
 using Core.Token;
 using Core.Token.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Models.DTOs.Login;
 using Models.DTOs.User;
 using Models.Models;
 using MongoDB.Driver;
 using Services.Collections;
 using Services.Interfaces;
+using System;
 using System.Net;
 
 namespace Services.Authentication
@@ -99,6 +102,23 @@ namespace Services.Authentication
                 User = uderDto
             };
             return new ServiceResponse<LoginRsponseDTO>(reponse);
+        }
+
+        public bool IsRefreshTokenValid(HttpRequest request, UserRecord userRecord)
+        {
+            ArgumentsValidator.ThrowIfNull(nameof(request), request);
+
+            var savedToken = userRecord.RefreshToken;
+
+            var requestedRefreshToken = request.Headers[TokenConstants.RefreshTokenFlag].FirstOrDefault() ?? string.Empty;
+
+            if (!savedToken.Token.Equals(requestedRefreshToken))
+            {
+                throw new SecurityTokenException("Requested refresh token is not belong to the user");
+            }
+
+            var delta = Convert.ToDateTime(userRecord.RefreshToken.ExpiryUtc) - DateTime.UtcNow;
+            return delta > TimeSpan.Zero;
         }
     }
 }
