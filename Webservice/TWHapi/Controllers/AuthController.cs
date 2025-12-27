@@ -5,6 +5,7 @@ using Core.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.Login;
+using Models.DTOs.User;
 using Services.Authentication;
 using Services.Interfaces;
 using System.Net;
@@ -66,12 +67,15 @@ namespace TWHapi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("resettokens")]
-        public async Task<ServiceResponse<TokensDTO>> ResetTokens([FromRoute] string customerUri)
+        public async Task<ServiceResponse<LoginRsponseDTO>> ResetTokens([FromRoute] string customerUri)
         {
             try
             {
+                ArgumentsValidator.ThrowIfNull(nameof(customerUri), customerUri);
+
                 // Regenerate refresh token
                 var userRecord = await _userOperations.RegenrateRefreshToken(customerUri);
                 var newRefreshToken = userRecord.Data.RefreshToken.Token;
@@ -79,15 +83,19 @@ namespace TWHapi.Controllers
                 // Generate new access token
                 var newAccessToken = _jwtHelper.GenerateJWTToken(ProgramHelpers.Common.GetJwtClaimItems(userRecord.Data));
 
-                var reponse = new TokensDTO()
+                var reponse = new LoginRsponseDTO
                 {
-                    AccessToken = newAccessToken,
-                    AccessTokenExpityUTC = _jwtHelper.GetTokenExpiryDateTimeUtc(),// TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.RefreshTokenExpiryInMinutes)),
-                    RefreshToken = newRefreshToken,
-                    RefreshTokenExpityUTC = _jwtHelper.GetRefreshTokenExpiryDateTimeUtc(),// TimeSpan.FromMinutes(Convert.ToDouble(_jwtHelper.GetJWTOptions().Value.ExpiryInMinutes)),
+                    User = _mapper.Map<UserResponseDTO>(userRecord),
+                    Token = new TokensDTO()
+                    {
+                        AccessToken = newAccessToken,
+                        AccessTokenExpityUTC = _jwtHelper.GetTokenExpiryDateTimeUtc(),
+                        RefreshToken = newRefreshToken,
+                        RefreshTokenExpityUTC = _jwtHelper.GetRefreshTokenExpiryDateTimeUtc(),
+                    }
                 };
 
-                return new ServiceResponse<TokensDTO>(reponse, HttpStatusCode.OK);
+                return new ServiceResponse<LoginRsponseDTO>(reponse, HttpStatusCode.OK);
             }
             catch (ApiException e)
             {
