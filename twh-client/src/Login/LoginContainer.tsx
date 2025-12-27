@@ -25,6 +25,7 @@ import { StatusCode } from "../Global/RequestReponseHelper";
 import useFetch from "../Loggedin/Common/UseFetch";
 import Loading from "../Loggedin/Common/Loading";
 import * as Utils from "../Global/Utils";
+import { ILoginReponse } from "./Types";
 
 const CustomButton = lazy(() => import("../Loggedin/Common/CustomButton"));
 
@@ -68,7 +69,6 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             Password: password
         };
         await ApiRequest({ url: `csid/auth/login`, method: 'POST', body: submission, withToken: false  });
-
         if(error || !fetchResponse.success) {
             let title = 'Error', body = '';
             switch (fetchResponse.statusCode) {
@@ -93,15 +93,9 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                 body
             });
         }else {
-            const response = fetchResponse.response as any;
+            const response = fetchResponse.response ?? {} as ILoginReponse;
 
-            const tokenExpiryDate = new Date(response.data.token.accessTokenExpityUTC);
-            const refreshTokenExpiryDate = new Date(response.data.token.refreshTokenExpityUTC);
-
-            // Set cookies
-            document.cookie = `${Utils.Cookies.token}=${response.data.token?.accessToken};expires=${tokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
-            document.cookie = `${Utils.Cookies.newRefreshToken}=${response.data.token?.refreshToken};expires=${refreshTokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
-
+            Utils.SetCookies(response);
             if(callback) callback(true);
         }
     };
