@@ -51,19 +51,17 @@ const UseFetch = () => {
             const initial = await callFetch({...props, abortController});
             fetchResponse=initial;
             
-            if (initial.statusCode === StatusCode.Unauthorized) {
-                const refreshUrl = `${customerUri}/auth/resettokens`;
-                
+            if (initial.statusCode === StatusCode.Unauthorized && props.withToken) {
                 const reset = await callFetch({
-                    url: refreshUrl,
+                    url: `${customerUri}/auth/resettokens`,
                     method: "POST",
-                    withToken: false,
+                    withToken: true,
                     abortController
                 });
-                Utils.SetCookies(reset.response as ILoginReponse);
-                fetchResponse = reset;
-
                 if (reset.success) {
+                    Utils.SetCookies(reset.response as ILoginReponse);
+                    fetchResponse = reset;
+
                     const retry = await callFetch({...props, abortController});
                     fetchResponse = retry;
                 } else {
