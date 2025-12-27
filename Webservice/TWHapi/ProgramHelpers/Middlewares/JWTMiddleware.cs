@@ -60,7 +60,7 @@ namespace TWHapi.ProgramHelpers.Middlewares
                 if (validatedAccessToken.ValidTo < DateTime.UtcNow)
                 {
                     // Find customer by uri from db
-                    await this.GetCustomerByUri(context);
+                    this._userResponse = await this._userOperations.GetUserByUriAsync(this.GetCustomerUriFromRoute(ref context));
 
                     var isValidRefrehToken = authOperations.IsRefreshTokenValid(context.Request, this._userResponse.Data);
                     // Regenerate refresh token and check if provided refresh token is valid and belongs to the user
@@ -138,11 +138,6 @@ namespace TWHapi.ProgramHelpers.Middlewares
                 throw new EntryPointNotFoundException("Access Token not found");
             }
             return token;
-        }
-
-        private async Task GetCustomerByUri(HttpContext context)
-        {
-            this._userResponse = await this._userOperations.GetUserByUriAsync(this.GetCustomerUriFromRoute(ref context));
         }
 
         private string GetCustomerUriFromRoute(ref HttpContext context)
