@@ -6,21 +6,16 @@ using Microsoft.Extensions.Options;
 
 namespace Services.ServiceProcessing
 {
-    public class ServiceProcessing : IServiceProcessing
-    {
-        private readonly ILoggerHelpers<ServiceProcessing> _logger;
-        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
-        private readonly IOptions<BackgroundTaskQueueOptions> _backgroundTaskQueueOptions;
-
-        public ServiceProcessing(
+    public class ServiceProcessing(
             ILoggerHelpers<ServiceProcessing> logger,
             IBackgroundTaskQueue backgroundTaskQueue,
-            IOptions<BackgroundTaskQueueOptions> backgroundTaskQueueOptions)
-        {
-            this._logger = logger;
-            this._backgroundTaskQueue = backgroundTaskQueue;
-            this._backgroundTaskQueueOptions = backgroundTaskQueueOptions;
-        }
+            IOptions<BackgroundTaskQueueOptions> backgroundTaskQueueOptions
+        ) : IServiceProcessing
+    {
+        private readonly ILoggerHelpers<ServiceProcessing> _logger = logger;
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue = backgroundTaskQueue;
+        private readonly IOptions<BackgroundTaskQueueOptions> _backgroundTaskQueueOptions = backgroundTaskQueueOptions;
+
         public async Task StartProcessing(
             Func<CancellationToken, Task> workItem,
             ServiceProcessingName processName)
@@ -29,7 +24,7 @@ namespace Services.ServiceProcessing
 
             ArgumentsValidator.ThrowIfNull(nameof(workItem), workItem);
 
-            CancellationToken ct = new CancellationToken();
+            var ct = new CancellationToken();
 
             try
             {

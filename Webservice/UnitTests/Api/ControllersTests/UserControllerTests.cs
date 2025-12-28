@@ -20,8 +20,8 @@ namespace UnitTests.Api.ControllersTests
         private readonly Mock<IJWTHelper> _mockJWTHelper;
         private readonly Mock<ILoggerHelpers<UserController>> _mockLogger;
 
-        private UserRecord _userRecord;
-        private UserRequestDTO _userRequestDTO;
+        private readonly UserRecord _userRecord;
+        private readonly UserRequestDTO _userRequestDTO;
 
         public UserControllerTests()
         {
@@ -72,6 +72,7 @@ namespace UnitTests.Api.ControllersTests
                 {
                     new UserResponseDTO
                     {
+                        Uri = "sampleUri",
                         FirstName = _userRecord.FirstName,
                         LastName = _userRecord.LastName,
                         Email = _userRecord.Email,
@@ -83,6 +84,7 @@ namespace UnitTests.Api.ControllersTests
             _mockMapper.Setup(x => x.Map<UserResponseDTO>(It.IsAny<UserRecord>()))
              .Returns(new UserResponseDTO
              {
+                 Uri = "sampleUri",
                  FirstName = _userRecord.FirstName,
                  LastName = _userRecord.LastName,
                  Email = _userRecord.Email,

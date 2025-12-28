@@ -17,30 +17,26 @@ namespace Core.Token
     {
         #region properties and Fields
 
-        IOptions<JWTOptions> _options = options;
+        private readonly IOptions<JWTOptions> _options = options;
 
-        private JWTClaimItems _claimItems { get; set; }
+        private JWTClaimItems ClaimItems { get; set; }
 
         #endregion
 
         #region public methods
         public string GenerateJWTToken(JWTClaimItems claimItems)
         {
-            this._claimItems = claimItems;
+            this.ClaimItems = claimItems;
 
-            string token = string.Empty;
             if (Convert.ToBoolean(Convert.ToBoolean(_options.Value.EnableJWE)) == true)
             {
                 var handler = new JsonWebTokenHandler();
                 var descriptor = GetSecurityTokenDescriptor();
-                token = handler.CreateToken(descriptor);
+                return handler.CreateToken(descriptor);
             }
-            else
-            {
-                var securityToken = GetJwtSecurityToken();
-                token = new JwtSecurityTokenHandler().WriteToken(securityToken);
-            }
-            return token;
+
+            var securityToken = GetJwtSecurityToken();
+            return new JwtSecurityTokenHandler().WriteToken(securityToken);
         }
 
         public string GenerateRefreshToken()
@@ -70,26 +66,26 @@ namespace Core.Token
         #region private methods
         private bool IsValidClaimItems()
         {
-            return !string.IsNullOrWhiteSpace(_claimItems.FirstName) &&
-                   !string.IsNullOrWhiteSpace(_claimItems.LastName) &&
-                   !string.IsNullOrWhiteSpace(_claimItems.Uri) &&
-                   !string.IsNullOrWhiteSpace(_claimItems.Email);
+            return !string.IsNullOrWhiteSpace(ClaimItems.FirstName) &&
+                   !string.IsNullOrWhiteSpace(ClaimItems.LastName) &&
+                   !string.IsNullOrWhiteSpace(ClaimItems.Uri) &&
+                   !string.IsNullOrWhiteSpace(ClaimItems.Email);
         }
-       
+
         private List<Claim> GetClaims()
         {
-            ArgumentsValidator.ThrowIfNull(nameof(_claimItems), _claimItems);
+            ArgumentsValidator.ThrowIfNull(nameof(ClaimItems), ClaimItems);
             if (!this.IsValidClaimItems())
             {
-                throw new ArgumentNullException(nameof(_claimItems), "JWT Claim Items cannot have null or empty values.");
+                throw new ArgumentNullException(nameof(ClaimItems), "JWT Claim Items cannot have null or empty values.");
             }
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, _claimItems.FirstName),
-                new Claim(ClaimTypes.Surname, _claimItems.LastName),
-                new Claim(ClaimTypes.Uri, _claimItems.Uri),
-                new Claim(ClaimTypes.Email, _claimItems.Email)
+                new (ClaimTypes.Name, ClaimItems.FirstName),
+                new (ClaimTypes.Surname, ClaimItems.LastName),
+                new (ClaimTypes.Uri, ClaimItems.Uri),
+                new (ClaimTypes.Email, ClaimItems.Email)
             };
             return claims;
         }

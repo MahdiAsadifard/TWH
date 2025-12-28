@@ -10,25 +10,25 @@ namespace Database
     public class Database<T> : IDatabase<T>
     {
         private readonly IOptions<DatabseOptions> _database;
-        private readonly IMongoClient _mongoClient;
+        private readonly MongoClient _mongoClient;
         private readonly IMongoDatabase _mongodatabase;
         
         public Database(IOptions<DatabseOptions> database)
         {
             _database = database;
 
-            _mongoClient = new MongoClient(mongoClientSettings);
+            _mongoClient = new MongoClient(MongoClientSettings);
             _mongodatabase = _mongoClient.GetDatabase(_database.Value.DatabaseName);
         }
 
         #region Public Methods
-        public SslSettings sslSettings
+        public SslSettings SslSettings
         {
             get
             {
                 return new SslSettings()
                 {
-                    ClientCertificates = new[] { new X509Certificate2(_database.Value.MongoCertificatePath, _database.Value.MongoCertificatePassword) },
+                    ClientCertificates = [ new X509Certificate2(_database.Value.MongoCertificatePath, _database.Value.MongoCertificatePassword) ],
                     CheckCertificateRevocation = true
                 };
             }
@@ -45,7 +45,7 @@ namespace Database
 
         #region Private Methods
 
-        private MongoClientSettings mongoClientSettings
+        private MongoClientSettings MongoClientSettings
         {
             get
             {
@@ -53,7 +53,7 @@ namespace Database
                 {
                     Scheme = ConnectionStringScheme.MongoDB,
                     Server = new MongoServerAddress(_database.Value.MongoServer, _database.Value.MongoPort),
-                    SslSettings = sslSettings,
+                    SslSettings = SslSettings,
                 };
             }
         }

@@ -9,30 +9,25 @@ namespace Core.Common
     {
         public static byte[] GenerateSHA256HashByte(string input)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = sha256.ComputeHash(inputBytes);
-
-                return hashBytes;
-            }
+            using SHA256 sha256 = SHA256.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = sha256.ComputeHash(inputBytes);
+            return hashBytes;
         }
         public static string GenerateSHA256Hash(string input)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            using SHA256 sha256 = SHA256.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = sha256.ComputeHash(inputBytes);
+
+            // Convert byte array to a hexadecimal string
+            StringBuilder sb = new();
+            foreach (byte b in hashBytes)
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = sha256.ComputeHash(inputBytes);
-
-                // Convert byte array to a hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                foreach (byte b in hashBytes)
-                {
-                    sb.Append(b.ToString("x2")); // Convert each byte to a hex string
-                }
-
-                return sb.ToString();
+                sb.Append(b.ToString("x2")); // Convert each byte to a hex string
             }
+
+            return sb.ToString();
         }
 
         public static string GenerateHashAndExtractFiveChars(string input)
@@ -60,29 +55,27 @@ namespace Core.Common
             return string.Join(string.Empty, uri);
         }
 
-        public static string SerializeJson(object json, JsonSerializerSettings settings = null)
+        public static string SerializeJson(object json, JsonSerializerSettings settings)
         {
-            if (settings is null)
+            // only if null, create new instance
+            settings ??= new JsonSerializerSettings
             {
-                settings = new JsonSerializerSettings
-                {
-                    /*
-                        new DefaultContractResolver()
+                /*
+                    new DefaultContractResolver()
 
-                        new CamelCasePropertyNamesContractResolver()
+                    new CamelCasePropertyNamesContractResolver()
 
-                        SnakeCaseNamingStrategy: 
-                            new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
+                    SnakeCaseNamingStrategy: 
+                        new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
 
-                        KebabCaseNamingStrategy:
-                            new DefaultContractResolver { NamingStrategy = new KebabCaseNamingStrategy() }
+                    KebabCaseNamingStrategy:
+                        new DefaultContractResolver { NamingStrategy = new KebabCaseNamingStrategy() }
 
-                        new IgnoreNullContractResolver()
-                        
-                     */
-                    ContractResolver = new DefaultContractResolver()
-                };
-            }
+                    new IgnoreNullContractResolver()
+
+                 */
+                ContractResolver = new DefaultContractResolver()
+            };
             return JsonConvert.SerializeObject(json, settings);
         }
 
