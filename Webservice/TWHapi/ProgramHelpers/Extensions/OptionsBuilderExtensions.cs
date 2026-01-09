@@ -1,5 +1,6 @@
 ﻿using Core.Queue;
 using Core.Token;
+using Database.Redis;
 using Models.Options;
 
 namespace TWHapi.ProgramHelpers.Extensions
@@ -19,6 +20,7 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             services.Configure<ServiceInfoOptions>(configuration.GetSection(ServiceInfoOptions.OptionName));
             services.Configure<DatabseOptions>(configuration.GetSection(DatabseOptions.OptionName));
+            services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.OptionName));
             services.Configure<JWTOptions>(configuration.GetSection(JWTOptions.OptionName));
 
             return services;

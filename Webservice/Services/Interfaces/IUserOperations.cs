@@ -33,5 +33,7 @@ namespace Services.Interfaces
         /// <exception cref="ApiException"></exception>
         Task<ServiceResponse<UserRecord>> RegenrateRefreshToken(UserRecord userRecord, string requestedToken);
         UserRefreshToken GetNewRefreshToken();
+
+        Task<string> TestRedis();
     }
 }

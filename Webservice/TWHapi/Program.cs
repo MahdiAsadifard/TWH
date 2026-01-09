@@ -6,8 +6,8 @@ builder
     .Services
     .InitializeCORS(builder.Configuration)
     .InitializeJWT(builder.Configuration)
-    .InitializeServices(builder.Configuration)
-    .InitializeOptions(builder.Configuration);
+    .InitializeOptions(builder.Configuration)
+    .InitializeServices(builder.Configuration);
 
 builder.Logging.InitializeLogging();
 builder.Services.AddHostedService<BackgroundWorker>();

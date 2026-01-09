@@ -2,6 +2,7 @@
 using Core.Queue;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Interfaces;
 using Services.ServiceProcessing;
 
 namespace TWHapi.Controllers
@@ -11,12 +12,14 @@ namespace TWHapi.Controllers
     public class HealthController(
             ILoggerHelpers<HealthController> logger,
             IBackgroundTaskQueue queue,
-            IServiceProcessing serviceProcessing
+            IServiceProcessing serviceProcessing,
+            IUserOperations userOperations
         ) : Controller
     {
         private readonly ILoggerHelpers<HealthController> _logger = logger;
         private readonly IBackgroundTaskQueue _queue = queue;
         private readonly IServiceProcessing _serviceProcessing = serviceProcessing;
+        private readonly IUserOperations _userOperations = userOperations;
 
         [AllowAnonymous]
         [HttpGet]
@@ -39,6 +42,13 @@ namespace TWHapi.Controllers
         public async Task<IActionResult> TestCustomerIdFromRoute([FromRoute] string customerUri)
         {
             return Ok(new { message = $"CustomerUri from route: {customerUri}" });
+        }
+
+        [HttpPost("testRedis")]
+        public async Task<IActionResult> TestRedis()
+        {
+            var result = await this._userOperations.TestRedis();
+            return Ok(result);
         }
     }
 }

@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Database
+namespace Database.Mongodb
 {
     public class Database<T> : IDatabase<T>
     {
@@ -22,6 +22,17 @@ namespace Database
         }
 
         #region Public Methods
+        public SslSettings SslSettings
+        {
+            get
+            {
+                return new SslSettings()
+                {
+                    ClientCertificates = [ new X509Certificate2(_database.Value.MongoCertificatePath, _database.Value.MongoCertificatePassword) ],
+                    CheckCertificateRevocation = true
+                };
+            }
+        }
 
         public IMongoCollection<T> GetCollection(string name)
         {
@@ -34,17 +45,6 @@ namespace Database
 
         #region Private Methods
 
-        private SslSettings SslSettings
-        {
-            get
-            {
-                return new SslSettings()
-                {
-                    ClientCertificates = [new X509Certificate2(_database.Value.MongoCertificatePath, _database.Value.MongoCertificatePassword)],
-                    CheckCertificateRevocation = true
-                };
-            }
-        }
         private MongoClientSettings MongoClientSettings
         {
             get
