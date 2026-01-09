@@ -4,7 +4,8 @@ using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
 using Core.Token;
-using Database;
+using Database.Mongodb;
+using Database.Redis;
 using Models.Common;
 using Models.DTOs.User;
 using Models.Models;
@@ -12,6 +13,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Services.Interfaces;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Services.Collections
 {
@@ -20,6 +22,8 @@ namespace Services.Collections
         private readonly IMongoCollection<UserRecord> _user;
         private readonly IMapper _mapper;
         private readonly IJWTHelper _jwtHelper;
+        private readonly IRedisCommandsBuilder _redisCommandsBuilder;
+        private readonly IRedisServices _redisServices;
 
         public byte[] GenerateHashPassword(string password, string salt)
         {
@@ -30,11 +34,15 @@ namespace Services.Collections
         public UserOperations(
             IDatabase<UserRecord> database,
             IMapper mapper,
-            IJWTHelper jwtHelper)
+            IJWTHelper jwtHelper,
+            IRedisCommandsBuilder redisCommandsBuilder,
+            IRedisServices redisServices)
         {
-            _user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
-            _mapper = mapper;
+            this._user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
+            this._mapper = mapper;
             this._jwtHelper = jwtHelper;
+            this._redisCommandsBuilder = redisCommandsBuilder;
+            this._redisServices = redisServices;
         }
 
         public async Task<ServiceResponse<IEnumerable<UserRecord>>> GetUsersAsync(
@@ -228,5 +236,18 @@ namespace Services.Collections
             };
         }
 
+        public async Task<string> TestRedis()
+        {
+            var key = "Key1";
+            var value = "value from api";
+            //var result = await this._redisServices.SetJson(key, value);
+            //await this._redisServices.SetBloom(key, value);
+            var isKeyAdded = await this._redisCommandsBuilder.SetAddAsync(key, value);
+
+            var result = await this._redisCommandsBuilder.GetValue(key);
+
+
+            return result;
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Models.Options
 {
-    public class DatabseOptions_TEST
+    public class DatabseOptions
     {
         public const string OptionName = "Database";
         public required string ConnectionString { get; set; }
