@@ -13,13 +13,13 @@ namespace TWHapi.Controllers
             ILoggerHelpers<HealthController> logger,
             IBackgroundTaskQueue queue,
             IServiceProcessing serviceProcessing,
-            IUserOperations userOperations
+            IHealthOperations healthOperations
         ) : Controller
     {
         private readonly ILoggerHelpers<HealthController> _logger = logger;
         private readonly IBackgroundTaskQueue _queue = queue;
         private readonly IServiceProcessing _serviceProcessing = serviceProcessing;
-        private readonly IUserOperations _userOperations = userOperations;
+        private readonly IHealthOperations _healthOperations = healthOperations;
 
         [AllowAnonymous]
         [HttpGet]
@@ -47,7 +47,7 @@ namespace TWHapi.Controllers
         [HttpPost("testRedis")]
         public async Task<IActionResult> TestRedis()
         {
-            var result = await this._userOperations.TestRedis();
+            var result = await this._healthOperations.AddSampleRedisCache();
             return Ok(result);
         }
     }

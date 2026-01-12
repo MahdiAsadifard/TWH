@@ -22,7 +22,6 @@ namespace Services.Collections
         private readonly IMongoCollection<UserRecord> _user;
         private readonly IMapper _mapper;
         private readonly IJWTHelper _jwtHelper;
-        private readonly IRedisCommandsBuilder _redisCommandsBuilder;
         private readonly IRedisServices _redisServices;
 
         public byte[] GenerateHashPassword(string password, string salt)
@@ -35,13 +34,11 @@ namespace Services.Collections
             IDatabase<UserRecord> database,
             IMapper mapper,
             IJWTHelper jwtHelper,
-            IRedisCommandsBuilder redisCommandsBuilder,
             IRedisServices redisServices)
         {
             this._user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
             this._mapper = mapper;
             this._jwtHelper = jwtHelper;
-            this._redisCommandsBuilder = redisCommandsBuilder;
             this._redisServices = redisServices;
         }
 
@@ -192,7 +189,7 @@ namespace Services.Collections
             ArgumentsValidator.ThrowIfNull(nameof(uri), uri);
 
             var response = await this.GetUserByUriAsync(uri);
-            
+
             if (!response.IsSuccess)
             {
                 return response;
@@ -200,14 +197,14 @@ namespace Services.Collections
 
             response.Data.RefreshToken = this.GetNewRefreshToken();
             var updateResult = await this.UpdateOneAsync(response.Data);
-            
+
             if (!updateResult.IsSuccess)
             {
                 return new ServiceResponse<UserRecord>(updateResult.Message, updateResult.StatusCode);
             }
             return new ServiceResponse<UserRecord>(response.Data, HttpStatusCode.OK);
         }
-        
+
         /// <summary>
         /// Compare requested token with current then regenerate new one
         /// </summary>
@@ -236,18 +233,5 @@ namespace Services.Collections
             };
         }
 
-        public async Task<string> TestRedis()
-        {
-            var key = "Key1";
-            var value = "value from api";
-            //var result = await this._redisServices.SetJson(key, value);
-            //await this._redisServices.SetBloom(key, value);
-            var isKeyAdded = await this._redisCommandsBuilder.SetAddAsync(key, value);
-
-            var result = await this._redisCommandsBuilder.GetValue(key);
-
-
-            return result;
-        }
     }
 }

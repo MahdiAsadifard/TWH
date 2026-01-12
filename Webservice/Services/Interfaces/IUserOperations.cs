@@ -16,14 +16,14 @@ namespace Services.Interfaces
         Task<ServiceResponse<UserRecord>> GetUserByUriAsync(string uri);
         Task<ServiceResponse<UserRecord>> InsertOneAsync(UserRequestDTO user);
         Task<ServiceResponse<UserRecord>> UpdateOneAsync(UserRecord userRecord);
-        
+
         /// <summary>
         /// Always regenrate new token
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
         Task<ServiceResponse<UserRecord>> RegenrateRefreshToken(string uri);
-        
+
         /// <summary>
         /// Compare requested token with current then regenerate new one
         /// </summary>
@@ -33,7 +33,5 @@ namespace Services.Interfaces
         /// <exception cref="ApiException"></exception>
         Task<ServiceResponse<UserRecord>> RegenrateRefreshToken(UserRecord userRecord, string requestedToken);
         UserRefreshToken GetNewRefreshToken();
-
-        Task<string> TestRedis();
     }
 }

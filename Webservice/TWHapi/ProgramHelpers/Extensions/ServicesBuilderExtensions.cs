@@ -5,9 +5,9 @@ using Database.Mongodb;
 using Database.Redis;
 using Microsoft.OpenApi;
 using Models.Common;
-using Models.Options;
 using Services.Authentication;
 using Services.Collections;
+using Services.Health;
 using Services.Interfaces;
 using Services.ServiceProcessing;
 
@@ -36,7 +36,6 @@ namespace TWHapi.ProgramHelpers.Extensions
 
             // Redis
             services.AddSingleton<IRedisProvider, RedisProvider>();
-            services.AddSingleton<IRedisCommandsBuilder, RedisCommandsBuilder>();
             services.AddSingleton<IRedisServices, RedisServices>();
 
             // Queue
@@ -62,6 +61,7 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Operations services
             services.AddScoped<IAuthOperations, AuthOperations>();
             services.AddScoped<IUserOperations, UserOperations>();
+            services.AddScoped<IHealthOperations, HealthOperations>();
 
             return services;
         }

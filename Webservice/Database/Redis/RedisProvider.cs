@@ -32,8 +32,7 @@ namespace Database.Redis
         {
             try
             {
-                var st =  ConnectionMultiplexer.Connect($"{this._options.Value.Host}:{this._options.Value.Port}");
-                return st;
+                return ConnectionMultiplexer.Connect($"{this._options.Value.Host}:{this._options.Value.Port}");
             }
             catch (Exception ex)
             {
