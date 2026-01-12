@@ -5,7 +5,7 @@ namespace Database.Redis
 {
     public interface IRedisServices
     {
-        Task<bool> SetAddAsync(string key, string value, int ttlMinutes);
+        Task<bool> SetAddAsync(string key, string value, int ttlMinutes = default);
         
         Task<RedisValue[]> GetValueAsync(string key);
         

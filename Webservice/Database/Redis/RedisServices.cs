@@ -23,10 +23,15 @@ namespace Database.Redis
             this._redis = redisFactory.Build();
         }
 
-        public async Task<bool> SetAddAsync(string key, string value, int ttlMinutes)
+        public async Task<bool> SetAddAsync(string key, string value, int ttlMinutes = default)
         {
             var redisKey = new RedisKey(key);
             if (await _redis.KeyExistsAsync(redisKey)) return true;
+
+            if(ttlMinutes == default)
+            {
+                ttlMinutes = this.TTLMinutes;
+            }
 
             var redisValue = new RedisValue(value);
             await _redis.SetAddAsync(redisKey, redisValue);

@@ -17,6 +17,15 @@ Accept: application/json
 }
 
 ###
+POST {{BASE_URL}}/auth/resettokens
+Content-Type: application/json
+Accept: application/json
+X-Refresh-Token: {{refreshToken}}
+
+{
+}
+
+###
 GET {{BASE_URL}}/health/enqueue
 X-Refresh-Token: {{refreshToken}}
 Authorization: {{accessToken}}
