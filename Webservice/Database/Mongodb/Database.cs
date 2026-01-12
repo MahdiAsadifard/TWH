@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Database
+namespace Database.Mongodb
 {
     public class Database<T> : IDatabase<T>
     {

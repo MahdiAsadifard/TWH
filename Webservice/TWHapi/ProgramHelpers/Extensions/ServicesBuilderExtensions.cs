@@ -1,11 +1,13 @@
 ﻿using Core.ILogs;
 using Core.Queue;
 using Core.Token;
+using Database.Mongodb;
+using Database.Redis;
 using Microsoft.OpenApi;
 using Models.Common;
-using Models.Options;
 using Services.Authentication;
 using Services.Collections;
+using Services.Health;
 using Services.Interfaces;
 using Services.ServiceProcessing;
 
@@ -32,6 +34,10 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Logger
             services.AddSingleton(typeof(ILoggerHelpers<>), typeof(LoggerHelpers<>));
 
+            // Redis
+            services.AddSingleton<IRedisProvider, RedisProvider>();
+            services.AddSingleton<IRedisServices, RedisServices>();
+
             // Queue
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
@@ -50,11 +56,12 @@ namespace TWHapi.ProgramHelpers.Extensions
             services.AddScoped<IJWTHelper, JWTHelper>();
 
             // Database
-            services.AddScoped(typeof(Database.IDatabase<>), typeof(Database.Database<>));
+            services.AddScoped(typeof(IDatabase<>), typeof(Database<>));
 
             // Operations services
             services.AddScoped<IAuthOperations, AuthOperations>();
             services.AddScoped<IUserOperations, UserOperations>();
+            services.AddScoped<IHealthOperations, HealthOperations>();
 
             return services;
         }

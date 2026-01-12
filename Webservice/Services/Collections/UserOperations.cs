@@ -4,7 +4,8 @@ using Core.Exceptions;
 using Core.NLogs;
 using Core.Response;
 using Core.Token;
-using Database;
+using Database.Mongodb;
+using Database.Redis;
 using Models.Common;
 using Models.DTOs.User;
 using Models.Models;
@@ -12,6 +13,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Services.Interfaces;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Services.Collections
 {
@@ -20,6 +22,7 @@ namespace Services.Collections
         private readonly IMongoCollection<UserRecord> _user;
         private readonly IMapper _mapper;
         private readonly IJWTHelper _jwtHelper;
+        private readonly IRedisServices _redisServices;
 
         public byte[] GenerateHashPassword(string password, string salt)
         {
@@ -30,11 +33,13 @@ namespace Services.Collections
         public UserOperations(
             IDatabase<UserRecord> database,
             IMapper mapper,
-            IJWTHelper jwtHelper)
+            IJWTHelper jwtHelper,
+            IRedisServices redisServices)
         {
-            _user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
-            _mapper = mapper;
+            this._user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
+            this._mapper = mapper;
             this._jwtHelper = jwtHelper;
+            this._redisServices = redisServices;
         }
 
         public async Task<ServiceResponse<IEnumerable<UserRecord>>> GetUsersAsync(
@@ -184,7 +189,7 @@ namespace Services.Collections
             ArgumentsValidator.ThrowIfNull(nameof(uri), uri);
 
             var response = await this.GetUserByUriAsync(uri);
-            
+
             if (!response.IsSuccess)
             {
                 return response;
@@ -192,14 +197,14 @@ namespace Services.Collections
 
             response.Data.RefreshToken = this.GetNewRefreshToken();
             var updateResult = await this.UpdateOneAsync(response.Data);
-            
+
             if (!updateResult.IsSuccess)
             {
                 return new ServiceResponse<UserRecord>(updateResult.Message, updateResult.StatusCode);
             }
             return new ServiceResponse<UserRecord>(response.Data, HttpStatusCode.OK);
         }
-        
+
         /// <summary>
         /// Compare requested token with current then regenerate new one
         /// </summary>

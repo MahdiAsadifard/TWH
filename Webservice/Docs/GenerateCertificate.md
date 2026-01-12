@@ -13,11 +13,18 @@ State or Province Name (full name) [Some-State]:ONTARIO
 Locality Name (eg, city) []:TORONTO
 Organization Name (eg, company) [Internet Widgits Pty Ltd]:TWH
 Organizational Unit Name (eg, section) []:TWH
-Common Name (e.g. server FQDN or YOUR name) []:TWH
-Email Address []:twh@twh.com
+Common Name (e.g. server FQDN or YOUR name) []:127.0.0.1
+Email Address []:twhuser@twh.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []: TWH$INS@
+An optional company name []:TWH
 ```
 Run scripts below
 ```
+Use TWH$INS@ as PEM pass phrase
+
 openssl genrsa -out TWH.key -aes256
 ```
 ```
@@ -27,8 +34,11 @@ openssl req -x509 -new -extensions v3_ca -key TWH.key -days 1000 -out TWH.crt
 openssl req -new -nodes -newkey rsa:2048 -keyout user.key -out user.csr
 ```
 ```
+Use TWH$INS@ as challenge password
+
 openssl x509 -CA TWH.crt -CAkey TWH.key -CAcreateserial -req -days=1000 -in user.csr -out user.crt
 ```
+
 ```
 cmd /c copy user.key + user.crt user.pem
 ```

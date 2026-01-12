@@ -1,0 +1,43 @@
+
+@customerUri=45272
+@BASE_URL=http://localhost:5005/api/{{customerUri}}
+
+@refreshToken=
+
+@accessToken=Bearer 
+
+###
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "mail@mail.com",
+    "password": "Hello123"
+}
+
+###
+POST {{BASE_URL}}/auth/resettokens
+Content-Type: application/json
+Accept: application/json
+X-Refresh-Token: {{refreshToken}}
+
+{
+}
+
+###
+GET {{BASE_URL}}/health/enqueue
+X-Refresh-Token: {{refreshToken}}
+Authorization: {{accessToken}}
+###
+POST {{BASE_URL}}/health/testRedis
+X-Refresh-Token: {{refreshToken}}
+Authorization: {{accessToken}}
+
+
+
+###
+GET {{BASE_URL}}/user
+Content-Content-Type: application/json
+Authorization: {{accessToken}}
+X-Refresh-Token: {{refreshToken}}
