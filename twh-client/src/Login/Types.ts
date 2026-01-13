@@ -26,4 +26,5 @@ export interface ILoginReponse {
         user: IUserReponseDto;
         token: IToken;
     };
+    rememberMe?: boolean; // indicates if the user opted for "remember me" during login
 };
