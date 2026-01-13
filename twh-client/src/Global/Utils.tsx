@@ -19,33 +19,24 @@ export const SetCookies = (response: ILoginReponse) => {
 }
 
 export const GetCookies = () => {
-   
     const map = new Map();
-    document.cookie
-        .split(';')
-        .map(browserCookie => {
-            const [key, value] = browserCookie.split('=').map(c => c.trim());
-            const browserIncludesCookie = Object.values(Cookies).some(x => x == key);
-            if(browserIncludesCookie) {
+    document.cookie.split(';').map(browserCookie => {
 
-                for (const [cKey, cValue] of Object.entries(Cookies)) {
-                    if (cValue === key) {
-                        map.set(cKey, value);
-                        break;
-                    }
+        const [key, value] = browserCookie.split('=').map(c => c.trim());
+        const browserIncludesCookie = Object.values(Cookies).some(x => x == key);
+
+        if(browserIncludesCookie) {
+            for (const [cKey, cValue] of Object.entries(Cookies)) {
+                if (cValue === key) {
+                    map.set(cKey, value);
+                    break;
                 }
             }
-        });
-        
-        const obj = {} as any;
-        
-        for (const key of Object.keys(Cookies)) {
-            if(map.has(key)) {
-                obj[key] = map.get(key);
-            }
         }
-        
-    return {...obj};
+    });
+
+    const result = Object.fromEntries(map)      
+    return { ...result };
 };
 
 export const DeleteAllCookies = () => {
