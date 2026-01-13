@@ -38,6 +38,7 @@ namespace Database.Redis
             {
                 this._logger.Log(ex, "Error on connecting to Redis - \nMessage: {Message}, \nStackTrace: {StackTrace}", ex.Message, ex.StackTrace);
                 NLogHelpers<RedisProvider>.Logger.Error(ex, "Error on connecting to Redis {Message}", ex.Message);
+               // throw new RedisConnectionException(ConnectionFailureType.UnableToConnect, ex.Message, ex, CommandStatus.Sent);
                 throw;
             }
         }
