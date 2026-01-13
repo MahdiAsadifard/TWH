@@ -4,15 +4,30 @@ import LoginContainer from './Login/LoginContainer';
 import {  useNavigate } from 'react-router';
 import { paths } from './Routs/Router';
 
+import * as Utils from "./Global/Utils";
+
 import "./Styles/Commons.css";
 
-// TODO: handle auto login - re generate token
 const Main = () => {
   const navigate = useNavigate();
 
-  const loginCallback = (val: any) => {
+  
+  React.useEffect(() => {
+    checkAutoLogin();    
+  },[]);
+
+  const checkAutoLogin = () => {
+    const { token, refreshToken, customerUri, rememberMe } = Utils.GetCookies();
+    const remember = JSON.parse(rememberMe?.toLowerCase() ?? false);
+    if(remember && token && refreshToken && customerUri){
+      loginCallback(true);
+    }
+  };
+
+  const loginCallback = (val: boolean) => {
     navigate(paths.signedin);
-  }
+  };
+
   return (
     <div className='root'>
       <LoginContainer callback={(e: any)=>loginCallback(e)} />

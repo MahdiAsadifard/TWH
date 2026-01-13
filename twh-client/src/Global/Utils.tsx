@@ -5,6 +5,7 @@ export enum Cookies {
     token = 'twh_token',
     refreshToken = 'twh_refresh_token',
     customerUri = 'twh_customer_uri',
+    rememberMe = 'twh_remember_me',
 };
 
 export const SetCookies = (response: ILoginReponse) => {
@@ -14,32 +15,37 @@ export const SetCookies = (response: ILoginReponse) => {
     document.cookie = `${Cookies.token}=${response.data.token?.accessToken};expires=${tokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
     document.cookie = `${Cookies.refreshToken}=${response.data.token?.refreshToken};expires=${refreshTokenExpiryDate.toUTCString()};domain=${window.location.hostname}`;
     document.cookie = `${Cookies.customerUri}=${response.data.user.uri};domain=${window.location.hostname}`;
+    document.cookie = `${Cookies.rememberMe}=${response.rememberMe ? 'true' : 'false'};domain=${window.location.hostname}`;
 }
 
 export const GetCookies = () => {
-    const token = document
-        .cookie
+   
+    const map = new Map();
+    document.cookie
         .split(';')
-        .find(x => x.trim().startsWith(Cookies.token))
-        ?.split('=')[1];
+        .map(browserCookie => {
+            const [key, value] = browserCookie.split('=').map(c => c.trim());
+            const browserIncludesCookie = Object.values(Cookies).some(x => x == key);
+            if(browserIncludesCookie) {
 
-    const refreshToken = document
-        .cookie
-        .split(';')
-        .find(x => x.trim().startsWith(Cookies.refreshToken))
-        ?.split('=')[1];
-    
-        const customerUri = document
-        .cookie
-        .split(';')
-        .find(x => x.trim().startsWith(Cookies.customerUri))
-        ?.split('=')[1];
-    
-    return {
-        token,
-        refreshToken,
-        customerUri,
-    };
+                for (const [cKey, cValue] of Object.entries(Cookies)) {
+                    if (cValue === key) {
+                        map.set(cKey, value);
+                        break;
+                    }
+                }
+            }
+        });
+        
+        const obj = {} as any;
+        
+        for (const key of Object.keys(Cookies)) {
+            if(map.has(key)) {
+                obj[key] = map.get(key);
+            }
+        }
+        
+    return {...obj};
 };
 
 export const DeleteAllCookies = () => {

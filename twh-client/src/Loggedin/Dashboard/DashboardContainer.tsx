@@ -16,8 +16,7 @@ const DashboardContainer = () => {
     <div
       className={`${styles.row}`}
     >
-        <div
-        >DashboardContainer</div>
+        <div>DashboardContainer</div>
     </div>
   );
 };

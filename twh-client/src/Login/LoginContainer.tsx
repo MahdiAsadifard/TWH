@@ -34,8 +34,6 @@ interface IProps {
 };
 
 
-// TODO: handle auto login
-
 const LoginContainer: React.FunctionComponent<IProps> = ({
     callback
 }): React.ReactElement => {
@@ -93,6 +91,7 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
                 body
             });
         }else {
+            fetchResponse.response.rememberMe = rememberMe; // append remember me to response to save in cookies
             const response = fetchResponse.response ?? {} as ILoginReponse;
 
             Utils.SetCookies(response);
