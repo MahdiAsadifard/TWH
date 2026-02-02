@@ -94,7 +94,9 @@ const LoginContainer: React.FunctionComponent<IProps> = ({
             fetchResponse.response.rememberMe = rememberMe; // append remember me to response to save in cookies
             const response = fetchResponse.response ?? {} as ILoginReponse;
 
+            // Set cookies
             Utils.SetCookies(response);
+
             if(callback) callback(true);
         }
     };

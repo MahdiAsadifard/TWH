@@ -62,30 +62,7 @@ import {
 
 import { paths } from "../../Routs/Router";
 
-const useStyles = makeStyles({
-    root: {
-        overflow: "hidden",
-        display: "flex",
-       height: "100vh",
-    },
-    rootClosed: {
-        //alignItems: 'flex-start',
-    },
-    content: {
-        flex: "1",
-        padding: "10px",
-        //display: "grid",
-        //justifyContent: "flex-start",
-        //alignItems: "flex-start",
-    },
-    field: {
-        display: "flex",
-        marginTop: "4px",
-        marginLeft: "8px",
-        flexDirection: "column",
-        gridRowGap: tokens.spacingVerticalS,
-    },
-});
+
 
 const Person = bundleIcon(Person20Filled, Person20Regular);
 const Dashboard = bundleIcon(Board20Filled, Board20Regular);
@@ -240,11 +217,36 @@ const Nav: React.FunctionComponent<IProps> = ({
         </NavDrawerBody>
       </NavDrawer>
       <div className={styles.content}>
-        {!isOpen && renderHamburgerWithToolTip()}
+        { !isOpen && renderHamburgerWithToolTip() }
         <Outlet />
       </div>
     </div>
   );
 };
+
+const useStyles = makeStyles({
+    root: {
+        overflow: "hidden",
+        display: "flex",
+       height: "100vh",
+    },
+    rootClosed: {
+        //alignItems: 'flex-start',
+    },
+    content: {
+        flex: "1",
+        padding: "10px",
+        //display: "grid",
+        //justifyContent: "flex-start",
+        //alignItems: "flex-start",
+    },
+    field: {
+        display: "flex",
+        marginTop: "4px",
+        marginLeft: "8px",
+        flexDirection: "column",
+        gridRowGap: tokens.spacingVerticalS,
+    },
+});
 
 export default Nav;

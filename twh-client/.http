@@ -1,6 +1,8 @@
-
-@customerUri=45272
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@customerUri=d1f2f
 @BASE_URL=http://localhost:5005/api/{{customerUri}}
+# @BASE_URL=https://localhost:7296/api
+
 
 @refreshToken=
 
@@ -13,7 +15,7 @@ Accept: application/json
 
 {
     "email": "mail@mail.com",
-    "password": "Hello123"
+    "password": "Mahdi@123"
 }
 
 ###
@@ -22,8 +24,6 @@ Content-Type: application/json
 Accept: application/json
 X-Refresh-Token: {{refreshToken}}
 
-{
-}
 
 ###
 GET {{BASE_URL}}/health/enqueue
@@ -41,3 +41,16 @@ GET {{BASE_URL}}/user
 Content-Content-Type: application/json
 Authorization: {{accessToken}}
 X-Refresh-Token: {{refreshToken}}
+
+###
+POST {{BASE_URL}}/user/register
+content-type: application/json
+Authorization: {{accessToken}}
+
+{
+    "FirstName": "new name",
+    "LastName": "New L name",
+    "Phone": "123456",
+    "Email": "mail@email.com",
+    "Password": "12"
+}
