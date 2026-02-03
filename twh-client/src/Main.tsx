@@ -28,7 +28,7 @@ const Main = () => {
         method: "GET",
         withToken: true
     });
-    console.log("==fetc uti: =",fetchResponse);
+
     if(!error && fetchResponse.success){
       setUser(fetchResponse.response.data as IUserReponseDto);
     }

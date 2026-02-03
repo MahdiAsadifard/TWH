@@ -3,7 +3,7 @@ import { StatusCode } from "../Global/RequestReponseHelper"
 
 export interface IUserReponseDto {
     uri: string;
-    firtsName: string;
+    firstName: string;
     lastName: string;
     phone?: string;
     email: string;
