@@ -38,7 +38,7 @@ namespace TWHapi.Controllers
 
 
 
-        [HttpGet("customerId")]
+        [HttpGet("{customerId}")]
         public async Task<IActionResult> TestCustomerIdFromRoute([FromRoute] string customerUri)
         {
             return Ok(new { message = $"CustomerUri from route: {customerUri}" });

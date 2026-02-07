@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.User;
 using Services.Interfaces;
 using Core.Token;
+using Models.DTOs.FileSystem;
 
 namespace TWHapi.Controllers
 {
@@ -17,13 +18,15 @@ namespace TWHapi.Controllers
             IUserOperations user,
             IMapper mapper,
             IJWTHelper jwhHelper,
-            ILoggerHelpers<UserController> logger
+            ILoggerHelpers<UserController> logger,
+            IUserUploads userUpload
         ) : BaseController
     {
         private readonly IJWTHelper _jwtHelper = jwhHelper;
         private readonly IUserOperations _user = user;
         private readonly IMapper _mapper = mapper;
         private readonly ILoggerHelpers<UserController> _logger = logger;
+        private readonly IUserUploads _userUpload = userUpload;
 
         [Route("")]
         [HttpGet]
@@ -82,6 +85,23 @@ namespace TWHapi.Controllers
                 NLogHelpers<UserController>.Logger.Info(msg);
                 throw new Exception("Error: " + ex.Message);
             }
+        }
+
+        [HttpPost("upload")]
+        public async Task<ServiceResponse<IFormFile>> UploadProfileImage(IFormFile file, [FromRoute] string customerUri)
+        {
+            var uploadedFile = this._userUpload
+                .SetFile(file)
+                .SetUserUri(customerUri)
+                .ProfileImage();
+            return new ServiceResponse<IFormFile>(uploadedFile);
+        }
+        
+        [HttpGet("profileimage")]
+        public async Task<ServiceResponse<ImageDTO>> GetProfileImage([FromRoute] string customerUri)
+        {
+            var file = this._userUpload.GetUserProfileImage(customerUri);
+            return new ServiceResponse<ImageDTO>(file, System.Net.HttpStatusCode.OK);
         }
     }
 }

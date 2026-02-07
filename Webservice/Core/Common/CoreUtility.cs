@@ -55,7 +55,7 @@ namespace Core.Common
             return string.Join(string.Empty, uri);
         }
 
-        public static string SerializeJson(object json, JsonSerializerSettings settings)
+        public static string SerializeJson(object json, JsonSerializerSettings settings = null)
         {
             // only if null, create new instance
             settings ??= new JsonSerializerSettings

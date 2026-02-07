@@ -1,4 +1,5 @@
-﻿using Core.ILogs;
+﻿using Core.FileSystem;
+using Core.ILogs;
 using Core.Queue;
 using Core.Token;
 using Database.Mongodb;
@@ -50,6 +51,8 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Mapper: All DTOs listed in Models assebly
             services.AddAutoMapper(cfg => { }, Utility.GetModelsAssemblies());
 
+            services.AddSingleton<IFileSystemProvider, FileSystemProvider>();
+
             // -------------- scoped services ----------------
 
             // JWT
@@ -61,6 +64,7 @@ namespace TWHapi.ProgramHelpers.Extensions
             // Operations services
             services.AddScoped<IAuthOperations, AuthOperations>();
             services.AddScoped<IUserOperations, UserOperations>();
+            services.AddScoped<IUserUploads, UserUploads>();
             services.AddScoped<IHealthOperations, HealthOperations>();
 
             return services;

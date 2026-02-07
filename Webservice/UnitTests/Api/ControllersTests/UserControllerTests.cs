@@ -19,6 +19,7 @@ namespace UnitTests.Api.ControllersTests
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<IJWTHelper> _mockJWTHelper;
         private readonly Mock<ILoggerHelpers<UserController>> _mockLogger;
+        private readonly Mock<IUserUploads> _mockUserUploads;
 
         private readonly UserRecord _userRecord;
         private readonly UserRequestDTO _userRequestDTO;
@@ -28,13 +29,15 @@ namespace UnitTests.Api.ControllersTests
             this._mockUserOperations = new Mock<IUserOperations>();
             this._mockMapper = new Mock<IMapper>();
             this._mockJWTHelper = new Mock<IJWTHelper>();
-            _mockLogger = new Mock<ILoggerHelpers<UserController>>();
+            this._mockLogger = new Mock<ILoggerHelpers<UserController>>();
+            this._mockUserUploads = new Mock<IUserUploads>();
 
             _userController = new UserController(
                 _mockUserOperations.Object,
                 _mockMapper.Object,
                 _mockJWTHelper.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockUserUploads.Object);
 
             // instance of UserRecord
             _userRecord = new UserRecord

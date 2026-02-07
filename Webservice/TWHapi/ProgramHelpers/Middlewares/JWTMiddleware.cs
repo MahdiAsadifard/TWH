@@ -81,9 +81,9 @@ namespace TWHapi.ProgramHelpers.Middlewares
                     status = context.Response.StatusCode,
                     innerException = e.Message,
                 };
+                NLogHelpers<JWTMiddleware>.Logger.Error("Token validation failed. Invalid token provided. \nMessage: {Message}, \nTrace: {Trace}", e.Message, e.StackTrace);
                 await context.Response.WriteAsJsonAsync(result);
 
-                NLogHelpers<JWTMiddleware>.Logger.Error("Token validation failed. Invalid token provided. \nMessage: {Message}, \nTrace: {Trace}", e.Message, e.StackTrace);
 
                 return;
             }

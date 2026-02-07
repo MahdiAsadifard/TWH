@@ -1,17 +1,21 @@
 ﻿using AutoMapper;
 using Core.Common;
 using Core.Exceptions;
+using Core.FileSystem;
 using Core.NLogs;
 using Core.Response;
 using Core.Token;
 using Database.Mongodb;
 using Database.Redis;
 using Models.Common;
+using Models.DTOs.FileSystem;
 using Models.DTOs.User;
 using Models.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Services.Interfaces;
+using SharpCompress.Common;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -34,7 +38,8 @@ namespace Services.Collections
             IDatabase<UserRecord> database,
             IMapper mapper,
             IJWTHelper jwtHelper,
-            IRedisServices redisServices)
+            IRedisServices redisServices,
+            IFileSystemProvider fileSystemProvider)
         {
             this._user = database.GetCollection(ModelConstants.CollectionNames.User.ToString());
             this._mapper = mapper;
@@ -232,6 +237,5 @@ namespace Services.Collections
                 ExpiryUtc = this._jwtHelper.GetRefreshTokenExpiryDateTimeUtc(),
             };
         }
-
     }
 }
