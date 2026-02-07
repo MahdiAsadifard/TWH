@@ -5,7 +5,7 @@ type FileType = 'image' | 'video' | 'audio' | 'document' | 'other';
 interface IProps {
     fileType: FileType;
     customStyle?: string;
-    onClickCallback?: (file: any) => void;
+    onClickCallback?: (file: HTMLFormElement) => void;
     children?: React.ReactNode;
 }
 
@@ -19,7 +19,7 @@ const CustomUpload: React.FunctionComponent<IProps>  = ({
     const [acceptedFileTypes, setAcceptedFileTypes] = React.useState<string>();
 
     const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+        const file  = e.target.files?.[0] as any;
         
         if(file && onClickCallback) {
             onClickCallback(file);

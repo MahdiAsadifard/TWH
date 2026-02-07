@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
     Image,
     Avatar
@@ -6,10 +6,12 @@ import {
 
 import CustomUpload from "../Common/CustomUpload";
 import Styles from "../../Styles/FluentStyles";
-
+import UseFetch from "../Common/UseFetch";
 import { useUser } from "../Common/UserProvider";
+import Loading from "../Common/Loading";
 
 const ImageProfile = (): React.ReactNode => {
+    const { ApiRequest, fetchResponse, error, loading } = UseFetch();
     const styles = Styles();
     const { user, isLoggeding } = useUser();
 
@@ -21,28 +23,45 @@ const ImageProfile = (): React.ReactNode => {
         loadProfileImage();
     }, []);
 
-    const loadProfileImage = () => {
+    const loadProfileImage = async () => {
         try {
-            const uri = user?.uri;
-            const path = require(`../../Assets/ProfileImages/${uri}.png`);
-            setHasProfileImage(true);
-            setProfileImagePath(path);
+            await ApiRequest({
+                url: `${user?.uri}/user/profileimage`,
+                method: "GET",
+                withToken: true,
+                isUpload: true
+            });
+            if(!error || fetchResponse.success) {
+                const contentBase64 = await fetchResponse.response.data.content;//Base64;
+                const base64 = `data:${fetchResponse.response.data.contentType};base64,${contentBase64}`;
+                setProfileImagePath(base64);
+                setHasProfileImage(true);
+            }
         } catch (error) {
             setHasProfileImage(false);
+            console.log('Error on loading profile image: ', error);
         }
     };
 
-    const onProfileImageUpload = (file: any) => {
-        
-        console.log("== f ile: ", file);
-        const reader = new FileReader();
-        //const u = URL.createObjectURL(file);
-        //  reader.readAsDataURL(new Blob(u));
-        //console.log('==U: ', u, reader);
+    const onProfileImageUpload = async (file: any) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        await ApiRequest({
+            url: `${user?.uri}/user/upload`,
+            method: "POST",
+            withToken: true,
+            body: formData,
+            isUpload: true
+        });
+
+        await loadProfileImage();
     }
 
+    if(loading) return <Loading FullScreen={false} />;
+
     return (
-        <CustomUpload fileType="image" onClickCallback={onProfileImageUpload} >
+        <CustomUpload fileType="image" onClickCallback={(file: HTMLFormElement) => onProfileImageUpload(file)} >
         {
             hasProfileImage ?
             (
@@ -53,7 +72,6 @@ const ImageProfile = (): React.ReactNode => {
                     height={400}
                     shape="circular"
                     fit="contain"
-                    onClick={(file) => onProfileImageUpload(file)}
                     className={`${styles.profile_image}`}
                 />
             ):
@@ -62,7 +80,6 @@ const ImageProfile = (): React.ReactNode => {
                     color="colorful"
                     name={`${user?.firstName} ${user?.lastName}`}
                     size={128}
-                    onClick={(file) => onProfileImageUpload(file)}
                     className={`${styles.profile_image}`}
                 />
             )

@@ -13,6 +13,7 @@ interface IProps {
     method: method;
     body?: any;
     withToken?: boolean;
+    isUpload?: boolean;
 }
 
 interface ICallApiProps {
@@ -21,6 +22,7 @@ interface ICallApiProps {
     body?: any;
     withToken?: boolean;
     abortController: AbortController;
+    isUpload?: boolean;
 }
 
 export interface IFetchResponse {
@@ -92,7 +94,8 @@ const callFetch = async ({
         method,
         body,
         withToken = true,
-        abortController
+        abortController,
+        isUpload = false
     }: ICallApiProps)
     : Promise<IFetchResponse> => {
     const { token, refreshToken } = Utils.GetCookies();
@@ -100,18 +103,25 @@ const callFetch = async ({
     if (url.startsWith("/")) url = url.substring(0, 1);
     url = `${WebserviceUrl}${url}`;
     const headers: HeadersInit = {
-        "Content-Type": "application/json",
         ...(withToken && {
             Authorization: `Bearer ${token}`,
             "X-Refresh-Token": refreshToken
+        }),
+        ...(!isUpload && {
+            "Content-Type": "application/json"
         })
     };
 
     try {
+        let _body = undefined;
+        if(body) {
+            _body = isUpload ? body : JSON.stringify(body);
+        }
+
         const response = await fetch(url, {
             method,
             headers,
-            body: body ? JSON.stringify(body) : undefined,
+            body: _body,
            // signal: abortController.signal // TODO: fix abort controller >>> existing with no reason issue 
         });
 

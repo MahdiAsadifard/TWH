@@ -16,11 +16,12 @@ const Main = () => {
 
   
   React.useEffect(() => {
+    if(!isLoggeding) navigate(paths.slash);
     checkCookies();
-  },[]);
+  }, []);
 
   const { ApiRequest, fetchResponse, error, loading } = UseFetch();
-  const { setUser } = useUser();
+  const { setUser, isLoggeding } = useUser();
 
   const getUserAndSetLocalStorage = async(uri: string) => {
     await ApiRequest({

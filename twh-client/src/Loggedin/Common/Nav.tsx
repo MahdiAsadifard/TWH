@@ -61,6 +61,7 @@ import {
 } from "@fluentui/react-icons";
 
 import { paths } from "../../Routs/Router";
+import { useUser } from "./UserProvider";
 
 
 
@@ -91,6 +92,7 @@ const Nav: React.FunctionComponent<IProps> = ({
 }): React.ReactElement => {
   const navigate = useNavigate();
   const styles = useStyles();
+  const { user, isLoggeding, clearUser } = useUser();
 
   const [isOpen, setIsOpen] = useState(true);
   const [type, setType] = useState<DrawerType>("inline");
@@ -104,6 +106,11 @@ const Nav: React.FunctionComponent<IProps> = ({
         <Hamburger onClick={() => setIsOpen(!isOpen)} />
       </Tooltip>
     );
+  };
+
+  const onSignoutHandler = () => {
+    linkDestination(paths.signout);
+    clearUser();
   };
 
   return (
@@ -211,7 +218,7 @@ const Nav: React.FunctionComponent<IProps> = ({
           <NavItem as="button" onClick={() => linkDestination()} icon={<Reports />} value="20">
             Reports
           </NavItem>
-          <NavItem as="button" onClick={() => linkDestination(paths.signout)} icon={<Signout />} value="21">
+          <NavItem as="button" onClick={onSignoutHandler} icon={<Signout />} value="21">
             Signout
           </NavItem>
         </NavDrawerBody>

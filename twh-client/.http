@@ -29,8 +29,14 @@ X-Refresh-Token: {{refreshToken}}
 GET {{BASE_URL}}/health/enqueue
 X-Refresh-Token: {{refreshToken}}
 Authorization: {{accessToken}}
+
 ###
 POST {{BASE_URL}}/health/testRedis
+X-Refresh-Token: {{refreshToken}}
+Authorization: {{accessToken}}
+
+###
+GET {{BASE_URL}}/health/{{customerUri}}
 X-Refresh-Token: {{refreshToken}}
 Authorization: {{accessToken}}
 
